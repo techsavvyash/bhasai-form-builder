@@ -46,6 +46,9 @@
     "yargs": "^16.x"
   },
   "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-core": "^5.0.0",
+    "babel-loader": "^5.3.2",
     "@alifd/next": "^1.19.1",
     "@rollup/plugin-commonjs": "^17.0.0",
     "@testing-library/jest-dom": "^5.0.0",
@@ -60,7 +63,7 @@
     "@typescript-eslint/eslint-plugin": "^4.9.1",
     "@typescript-eslint/parser": "^4.8.2",
     "@umijs/plugin-sass": "^1.1.1",
-    "antd": "^4.0.0",
+    "antd": "^4.24.16",
     "chalk": "^2.4.2",
     "chokidar": "^2.1.2",
     "concurrently": "^4.1.0",

@@ -9,7 +9,7 @@ import path from 'path'
 
 const presets = () => {
   const externals = {
-    antd: 'Antd',
+    // antd: 'antd',
     vue: 'Vue',
     react: 'React',
     moment: 'moment',

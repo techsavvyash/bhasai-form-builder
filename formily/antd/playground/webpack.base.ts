@@ -47,10 +47,34 @@ export default {
     react: 'React',
     'react-dom': 'ReactDOM',
     moment: 'moment',
-    antd: 'antd',
+    // // antd: 'antd',
   },
   module: {
     rules: [
+      // {
+      //   test: /\.js$/,
+      //   exclude: /node_modules/,
+      //   use: 'babel-loader',
+      // },
+      // {
+      //   test: /\.css$/,
+      //   use: ['style-loader', 'css-loader'],
+      // },
+      // {
+      //   test: /\.less$/,
+      //   use: [
+      //     'style-loader',
+      //     'css-loader',
+      //     {
+      //       loader: 'less-loader',
+      //       options: {
+      //         lessOptions: {
+      //           javascriptEnabled: true,
+      //         },
+      //       },
+      //     },
+      //   ],
+      // },
       {
         test: /\.tsx?$/,
         use: [
