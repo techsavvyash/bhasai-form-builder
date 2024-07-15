@@ -1,16 +1,16 @@
-export const sendTextQuestion = () => {
+const sendTextQuestion = () => {
   const msg = JSON.parse($0)
   msg.payload.text = 'Please enter your name'
   return JSON.stringify(msg)
 }
 
-export const saveReplyAndSendQuestion = () => {
+const saveReplyAndSendQuestion = () => {
   const msg = JSON.parse($0)
   msg.payload.text = 'Please enter your name'
   return JSON.stringify(msg)
 }
 
-export const sendChoices = () => {
+const sendChoices = () => {
   const msg = JSON.parse($0)
 
   // store user's reply
