@@ -4,6 +4,10 @@
 
 ---
 
+## References
+
+- [Shared Package API Docs](https://react.formilyjs.org/api/shared/schema#self)
+
 ## Introduction
 
 If you are worrying about something builder, Such as form builder/table builder/chart builder/app builder etc.
