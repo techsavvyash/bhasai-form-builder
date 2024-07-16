@@ -21,7 +21,6 @@ class FieldParsers {
         fieldDetail['x-validator'].length != 0
           ? fieldDetail['x-validator']
           : 'none',
-      display: this.displayParser(fieldDetail),
     }
   }
 
@@ -50,7 +49,6 @@ class FieldParsers {
           showTextInput: true,
         }
       }),
-      display: this.displayParser(fieldDetail),
     }
   }
 
@@ -82,7 +80,6 @@ const parseFormilyInputFieldDetails = (fieldDetail) => {
     component: 'Error',
     description: 'Component not found',
     validation: 'none',
-    display: false,
   }
 }
 
@@ -92,6 +89,8 @@ export const parseFormilyJSON = (properties) => {
 
   const fields = Object.keys(properties)
   fields.forEach((field) => {
+    const display = FieldParsers.displayParser(properties[field])
+    if (!display) return
     fieldDetails.push(parseFormilyInputFieldDetails(properties[field]))
   })
   return fieldDetails
