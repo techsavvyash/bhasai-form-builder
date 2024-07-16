@@ -1,62 +1,57 @@
-import { formily_flowise_compiler } from '../compiler'
-// const formily_flowise_compiler = require('../compiler')
+import { formily_flowise_compiler } from '../index'
+// const formily_flowise_compiler = require('../index');
 import * as fs from 'fs'
-// const fs = require('fs')
+// const fs = require('fs');
 
-// Test case 1 (INPUT FIELD | SINGLE)
-const formily_input1 = fs.readFileSync('./formily/formily_input1.json')
-const flowise_output1 = formily_flowise_compiler(JSON.parse(formily_input1))
-fs.writeFileSync(
-  './flowise/flowise_output1.json',
-  JSON.stringify(flowise_output1, null, 2)
-)
+describe('Formily Flowise Compiler Tests', () => {
+  const readJSON = (path) => JSON.parse(fs.readFileSync(path, 'utf8'))
 
-// Test case 2 (INPUT FIELD | MULTIPLE)
-const formily_input2 = fs.readFileSync('./formily/formily_input2.json')
-const flowise_output2 = formily_flowise_compiler(JSON.parse(formily_input2))
-fs.writeFileSync(
-  './flowise/flowise_output2.json',
-  JSON.stringify(flowise_output2, null, 2)
-)
+  test('Test case 1 (INPUT FIELD | SINGLE)', () => {
+    const formily_input1 = readJSON('./formily/formily_input1.json')
+    const expected_output1 = readJSON('./flowise/flowise_output1.json')
+    const flowise_output1 = formily_flowise_compiler(formily_input1)
+    expect(flowise_output1).toEqual(expected_output1)
+  })
 
-// Test case 3 (SELECT FIELD | SINGLE)
-const formily_select1 = fs.readFileSync('./formily/formily_select1.json')
-const flowise_select1 = formily_flowise_compiler(JSON.parse(formily_select1))
-fs.writeFileSync(
-  './flowise/flowise_select1.json',
-  JSON.stringify(flowise_select1, null, 2)
-)
+  test('Test case 2 (INPUT FIELD | MULTIPLE)', () => {
+    const formily_input2 = readJSON('./formily/formily_input2.json')
+    const expected_output2 = readJSON('./flowise/flowise_output2.json')
+    const flowise_output2 = formily_flowise_compiler(formily_input2)
+    expect(flowise_output2).toEqual(expected_output2)
+  })
 
-// Test case 4 (SELECT FIELD | MULTIPLE)
-const formily_select2 = fs.readFileSync('./formily/formily_select2.json')
-const flowise_select2 = formily_flowise_compiler(JSON.parse(formily_select2))
-fs.writeFileSync(
-  './flowise/flowise_select2.json',
-  JSON.stringify(flowise_select2, null, 2)
-)
+  test('Test case 3 (SELECT FIELD | SINGLE)', () => {
+    const formily_select1 = readJSON('./formily/formily_select1.json')
+    const expected_output3 = readJSON('./flowise/flowise_select1.json')
+    const flowise_select1 = formily_flowise_compiler(formily_select1)
+    expect(flowise_select1).toEqual(expected_output3)
+  })
 
-// Test case 5 (MIX)
-const formily_mix1 = fs.readFileSync('./formily/formily_mix1.json')
-const flowise_mix1 = formily_flowise_compiler(JSON.parse(formily_mix1))
-fs.writeFileSync(
-  './flowise/flowise_mix1.json',
-  JSON.stringify(flowise_mix1, null, 2)
-)
+  test('Test case 4 (SELECT FIELD | MULTIPLE)', () => {
+    const formily_select2 = readJSON('./formily/formily_select2.json')
+    const expected_output4 = readJSON('./flowise/flowise_select2.json')
+    const flowise_select2 = formily_flowise_compiler(formily_select2)
+    expect(flowise_select2).toEqual(expected_output4)
+  })
 
-// Test Case 6 (Sapce separated TITLE)
-const formily_space = fs.readFileSync('./formily/formily_space.json')
-const flowise_space = formily_flowise_compiler(JSON.parse(formily_space))
-fs.writeFileSync(
-  './flowise/flowise_space.json',
-  JSON.stringify(flowise_space, null, 2)
-)
+  test('Test case 5 (MIX)', () => {
+    const formily_mix1 = readJSON('./formily/formily_mix1.json')
+    const expected_output5 = readJSON('./flowise/flowise_mix1.json')
+    const flowise_mix1 = formily_flowise_compiler(formily_mix1)
+    expect(flowise_mix1).toEqual(expected_output5)
+  })
 
-// Test Case 7 (Validators)
-const formily_validators = fs.readFileSync('./formily/formily_validators.json')
-const flowise_validators = formily_flowise_compiler(
-  JSON.parse(formily_validators)
-)
-fs.writeFileSync(
-  './flowise/flowise_validators.json',
-  JSON.stringify(flowise_validators, null, 2)
-)
+  test('Test case 6 (Space separated TITLE)', () => {
+    const formily_space = readJSON('./formily/formily_space.json')
+    const expected_output6 = readJSON('./flowise/flowise_space.json')
+    const flowise_space = formily_flowise_compiler(formily_space)
+    expect(flowise_space).toEqual(expected_output6)
+  })
+
+  test('Test case 7 (Validators)', () => {
+    const formily_validators = readJSON('./formily/formily_validators.json')
+    const expected_output7 = readJSON('./flowise/flowise_validators.json')
+    const flowise_validators = formily_flowise_compiler(formily_validators)
+    expect(flowise_validators).toEqual(expected_output7)
+  })
+})
