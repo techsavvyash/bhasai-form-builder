@@ -2,6 +2,14 @@
 import { INPUT_FIELD_TYPES } from './fieldTypes'
 
 class FieldParsers {
+  static displayParser(fieldDetail) {
+    if (!fieldDetail['x-display']) return true
+    const display = fieldDetail['x-display']
+    if (display === 'visible' || display === 'inherit' || display === '')
+      return true
+    else return false
+  }
+
   // INPUT FIELD PARSER
   static Input(fieldDetail) {
     const title = fieldDetail['title'].replace(/\s/g, '') // mustn't have spaces
@@ -13,6 +21,7 @@ class FieldParsers {
         fieldDetail['x-validator'].length != 0
           ? fieldDetail['x-validator']
           : 'none',
+      display: this.displayParser(fieldDetail),
     }
   }
 
@@ -32,6 +41,7 @@ class FieldParsers {
           showTextInput: true,
         }
       }),
+      display: this.displayParser(fieldDetail),
     }
   }
 
@@ -63,6 +73,7 @@ const parseFormilyInputFieldDetails = (fieldDetail) => {
     component: 'Error',
     description: 'Component not found',
     validation: 'none',
+    display: false,
   }
 }
 

@@ -182,6 +182,7 @@ export class Flowise {
 
     // Create Code Runner and User Feedback Loop Nodes for each field
     fields.forEach((field, index) => {
+      if (!field['display']) return
       // Creating an unique id for each node
       const id = `FIELD_${index}`
 
