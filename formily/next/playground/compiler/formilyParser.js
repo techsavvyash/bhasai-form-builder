@@ -83,6 +83,8 @@ const parseFormilyInputFieldDetails = (fieldDetail) => {
   }
 }
 
+// TODO: Parse x-reactions
+// TODO: Get 'title' such as it handle both reactions and storing keys;
 // Formily JSON Parser
 export const parseFormilyJSON = (properties) => {
   const fieldDetails = []
