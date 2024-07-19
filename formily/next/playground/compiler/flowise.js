@@ -9,22 +9,18 @@ import validations from './valid'
 const msg_init = 'const msg = JSON.parse($0);\n'
 const msg_end = 'return JSON.stringify(msg);'
 
-// TODO: Write isVISIBLE code according to reactions
 // IS VISIBLE CODE TEXT
 function isVisibleCode(fieldDetail) {
-  const code = msg_init
-  if (fieldDetail['x-display']) {
-    if (
-      fieldDetail['x-display'] === 'visible' ||
-      fieldDetail['x-display'] === 'inherit' ||
-      fieldDetail['x-display'] === ''
-    ) {
-      code += 'msg.payload.isVisible = true;\n'
-    } else {
-      code += 'msg.payload.isVisible = false;\n'
-    }
-  } else {
-    code += 'msg.payload.isVisible = true;\n'
+  let code = msg_init
+  // If field is not visible, throw an error to go to next group
+  if (fieldDetail['display'] === false) {
+    code += `throw new Error('Not Visible');\n`
+  }
+  // If field is visible, check for reactions
+  if (fieldDetail['reactions']) {
+    code += `let formInput = msg.transformer.metaData.formInput;\n`
+    // If reactions are not fulfilled, throw an error to go to next group
+    code += `if(!(${fieldDetail['reactions']})) throw new Error('Not Visible');\n`
   }
   code += msg_end
   return code
@@ -34,7 +30,8 @@ function isVisibleCode(fieldDetail) {
 function AskQuestion(fieldDetail) {
   const description = fieldDetail['description'] || 'Description not provided'
   const component = fieldDetail['component']
-  const code = `msg.payload.text = "${description}";\n`
+  let code = msg_init
+  code += `msg.payload.text = "${description}";\n`
   switch (component) {
     case INPUT_FIELD_TYPES.INPUT:
       break
@@ -46,6 +43,7 @@ function AskQuestion(fieldDetail) {
     default:
       break
   }
+  code += msg_end
   return code
 }
 
@@ -140,14 +138,14 @@ export class Flowise {
     const fields = this.fields
 
     // Foreach field, create the group of nodes and edges
-    fields.foreach((field, index) => {
+    fields.forEach((field, index) => {
       // create Field Group
       this.createFieldGroup(field, index)
     })
 
     // Create The External Edges for each group
     // Connect each group to the next group
-    numberOfFields = fields.length
+    const numberOfFields = fields.length
     for (let index = 0; index < numberOfFields; index++) {
       // Edge: prev-CODE_RUNNER_STORE_NODE / START (if index == 0) -> curr-CODE_RUNNER_isVISIBLE_NODE
       if (index == 0) {
@@ -208,6 +206,8 @@ export class Flowise {
     )
     // Update xMessage of END node
     this.xMessageConnect(`CODE_RUNNER_STORE_${numberOfFields - 1}`, `end`)
+    // push last_Store_end_edge
+    this.edges.push(last_Store_end_edge)
   }
 
   // CREATE FIELD GROUP
