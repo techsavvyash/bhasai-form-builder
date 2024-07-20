@@ -51,8 +51,14 @@ function AskQuestion(fieldDetail) {
 function GetInput(title, validation) {
   // Validation Code Text
   let validationCode = ''
-  if (validation !== 'none') {
+  if (validation.length > 0) {
     // const validationPath = path.resolve(__dirname, 'validations.js')
+    const validationString = []
+    validation.forEach((valid) => {
+      validationString.push(`validator.["${validation}"](msg.payload.text)`)
+    })
+
+    const validString = validationString.join(' && ')
     try {
       // let validationFile = null;
       // fs.readFile(validationPath, 'utf8', (err, data) => {
@@ -65,7 +71,7 @@ function GetInput(title, validation) {
       validationCode =
         validations +
         // validationFile +
-        `if(!validator["${validation}"](msg.payload.text)) throw new Error('Wrong input, Please Retype');\n`
+        `if(!(${validString})) throw new Error('Wrong input, Please Retype');\n`
     } catch (err) {
       console.error('Error reading validation file:', err)
       throw err

@@ -86,7 +86,7 @@ class FieldParsers {
       validation:
         fieldDetail['x-validator'].length != 0
           ? fieldDetail['x-validator']
-          : 'none',
+          : [],
       display,
       reactions,
     }
@@ -102,7 +102,7 @@ class FieldParsers {
         title,
         component: 'Select',
         description: fieldDetail['description'] || 'Description not provided',
-        validation: 'none',
+        validation: [],
         options: [],
         display,
         reactions,
@@ -112,7 +112,7 @@ class FieldParsers {
       title,
       component: 'Select',
       description: fieldDetail['description'] || 'Description not provided',
-      validation: 'none',
+      validation: [],
       options: fieldDetail['enum'].map((option, index) => {
         return {
           key: option['value'],
@@ -152,13 +152,15 @@ class FieldParsers {
           title: 'Error',
           component: 'Error',
           description: 'Component not found',
-          validation: 'none',
+          validation: [],
           display: false,
         }
     }
     return parsedObject
   }
 }
+
+// TODO: Implement this branch when x-validations : ["", ""] is provided
 
 // Formily JSON Parser
 export const parseFormilyJSON = (properties) => {
