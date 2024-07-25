@@ -31,7 +31,7 @@ function AskQuestion(fieldDetail) {
   const description = fieldDetail['description'] || 'Description not provided'
   const component = fieldDetail['component']
   let code = msg_init
-  code += `msg.payload.text = "${description}";\n`
+  code += `msg.payload.text = "${description}";\nmsg.transformer.metaData.currentQuestion="${description}"`
   switch (component) {
     case INPUT_FIELD_TYPES.INPUT:
       break
@@ -68,6 +68,12 @@ function GetInput(title, validation) {
       //   }
       //   validationFile = data;
       // })
+      const validationString = []
+      validation.forEach((valid) => {
+        validationString.push(`validator.["${validation}"](msg.payload.text)`)
+      })
+
+      const validString = validationString.join(' && ')
       validationCode =
         validations +
         // validationFile +

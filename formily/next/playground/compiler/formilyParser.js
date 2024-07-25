@@ -18,7 +18,8 @@ function getTitleFromDependency(dependency, formilyJSON) {
   const titles = {}
   dependency.forEach((dep) => {
     const source = dep['source']
-    const title = formilyJSON[source]['title'].replace(/\s/g, '')
+    // const title = formilyJSON[source]['title'].replace(/\s/g, '')
+    const title = source.replace(/\s/g, '')
     const name = dep['name']
     titles[name] = title
   })
@@ -76,7 +77,13 @@ class FieldParsers {
 
   // INPUT FIELD PARSER
   Input(fieldDetail) {
-    const title = fieldDetail['title'].replace(/\s/g, '') // mustn't have spaces
+    let title
+    if (fieldDetail['name']) {
+      title = fieldDetail['name'].replace(/\s/g, '')
+    } else {
+      title = fieldDetail['x-designable-id'].replace
+    }
+    // const title = fieldDetail['title'].replace(/\s/g, '') // mustn't have spaces
     const display = this.displayParser(fieldDetail)
     const reactions = this.reactionsParser(fieldDetail)
     return {
@@ -94,7 +101,13 @@ class FieldParsers {
 
   // SELECT FIELD PARSER
   Select(fieldDetail) {
-    const title = fieldDetail['title'].replace(/\s/g, '')
+    let title
+    if (fieldDetail['name']) {
+      title = fieldDetail['name'].replace(/\s/g, '')
+    } else {
+      title = fieldDetail['x-designable-id'].replace
+    }
+    // const title = fieldDetail['title'].replace(/\s/g, '')
     const display = this.displayParser(fieldDetail)
     const reactions = this.reactionsParser(fieldDetail)
     if (!fieldDetail['enum']) {
