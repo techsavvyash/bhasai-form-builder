@@ -83,18 +83,23 @@ function runValidatorCode(fieldDetail) {
         "${title}": {}
       };
     }
+    else{
+      msg.transformer.metaData.validationResult = {
+        "${title}": {}
+      };
+    }
   `
 
   // if SKIPPED
   code += `
   if(msg.payload.text == "SKIP") {
-    msg.transformer.metaData.validationResult.${title} = {
+    msg.transformer.metaData.validationResult["${title}"] = {
       "skip-validation": {
         error: false,
         message: "User Skipped the message"
       }
     }
-    ${msg_end};
+    ${msg_end}
   }
   `
   // store input in currentInput
@@ -107,17 +112,18 @@ function runValidatorCode(fieldDetail) {
     // code for validation
     code += `
     const inputText = msg.transformer.metaData.currentInput["${title}"].text;\n
+    let res;
+    const validationResult = msg.transformer.metaData.validationResult["${title}"] || {};
     `
     // run all validations and store results in metaData
     // key in validationResults [title]
     validationTypes.forEach((validationType) => {
       code += `
-        let res = validator["${validationType}"](inputText)
-        msg.transformer.metaData.validationResult["${title}"] = {
-          ${validationType}: res,
-        }\n
+        res = validator["${validationType}"](inputText)
+        validationResult["${validationType}"] = res;\n
       `
     })
+    code += `msg.transformer.metaData.validationResult["${title}"] = validationResult;\n`
   }
 
   code += msg_end
@@ -144,7 +150,7 @@ function llmCurrentInputStore(fieldDetail) {
           message: "User Skipped the message"
         }
       }
-      ${msg_end};
+      ${msg_end}
     }
     msg.transformer.metaData.currentInput["${title}"].text = msg.payload.text;
   `
@@ -160,7 +166,7 @@ function llmValidatorCode(fieldDetail) {
     msg.transformer.metaData.validationResult["${title}"] = {
       llm: msg.payload.text,
     }
-    ${msg_end};
+    ${msg_end}
   `
   return code
 }
@@ -183,17 +189,17 @@ function storeInputCode(fieldDetail) {
         formInput = {\"${title}\": ""}
       }
       msg.transformer.metaData.formInput = formInput;
-      ${msg_end};
+      ${msg_end}
     }
   `
-  if (validationTypes.contains('llm')) {
+  if (validationTypes.includes('llm')) {
     code += `
       if(msg.transformer.metaData.validationResult["${title}"]["llm"].error){
         throw new Error("Required Field");
       }
     `
   }
-  if (!validationTypes.length == 0 && !validationTypes.contains('llm')) {
+  if (!validationTypes.length == 0 && !validationTypes.includes('llm')) {
     // CHECKS
     // Check all the validations TAKING msg.transformer.metaData.validationResult["${title}"]
     //validationExpressions is an array of strings : each string is an expression that evaluates to true / false
@@ -245,17 +251,19 @@ function ValidationMsg(fieldDetail) {
     code += `
       const validationMsgs = [];
         const validations = msg.transformer.metaData.validationResult;
-        if(!validations) break;
-        const validationResult = msg.transformer.metaData.validationResult["${title}"];
-        if(!validationResult) break;
-        const validationTypes = Object.keys(validationResult);
-        validationTypes.forEach((validationType) => {
-          if(validationResult[validationType].error){
-            validationMsgs.push(validationResult[validationType].message);
+        if(validations){
+          const validationResult = msg.transformer.metaData.validationResult["${title}"];
+          if(validationResult){
+            const validationTypes = Object.keys(validationResult);
+            validationTypes.forEach((validationType) => {
+              if(validationResult[validationType].error){
+                validationMsgs.push(validationResult[validationType].message);
+              }
+            });
+            const validationString = validationMsgs.join(" ");
+            msg.payload.text = validationString;
           }
-        });
-        const validationString = validationMsgs.join("\\n");
-        msg.payload.text = validationString;
+        }
     `
   }
 
@@ -271,10 +279,12 @@ function ValidationMsg(fieldDetail) {
             text: "SKIP",
             key: "SKIP",
             isEnabled: true,
-            showTextInput: false
+            showTextInput: true
           },
           ]
         }
+      }else{
+        msg.payload.text += " This is a mandatory question you can't skip it.";
       }
     }
   `
@@ -416,7 +426,7 @@ export class Flowise {
       []
     )
     const validationTypes = field['validation'] // array of validation types
-    const hasLLmValidation = validationTypes.contains('llm') // boolean
+    const hasLLmValidation = validationTypes.includes('llm') // boolean
 
     // create CODE_RUNNER_ASK_NODE
     const askNode_id = `ASK_${index}`
