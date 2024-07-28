@@ -133,6 +133,7 @@ function runValidatorCode(fieldDetail) {
 // In case of LLM Validator, store the input in currentInput before going to validator
 function llmCurrentInputStore(fieldDetail) {
   const title = fieldDetail['title']
+  const description = fieldDetail['description']
   let code = msg_init
   // create key of validationResults[title] in metaData and initialize it as {}
   code += `
@@ -154,6 +155,23 @@ function llmCurrentInputStore(fieldDetail) {
     }
     msg.transformer.metaData.currentInput["${title}"].text = msg.payload.text;
   `
+
+  // // llm prompt
+
+  // code += `
+  //   msg.transformer.metaData.prompt = [
+  //     {
+  //       role: 'system',
+  //       content:
+  //         'You are an AI assitant helping a user fill in a form. Your job is to analyse the answer given by the user is valid for the question context provided and reiterate and reassure them if they feel uncomfortable or re-explain if they feel confused. You are to always return the response in the form on JSON with two only two keys, error and message, error is a boolean key which is true in case the answer is not relevant to the question and false if the answer is not relevant or is not validated and message is the respone you want to send to them to help them or thank them. Examples: {error: false, message: thanks for your response }; { error: true, message: your response is not relevant to the question }. Always make sure that the response you send back is parseable by JSON.parse() in NodeJS.',
+  //     },
+  //     {
+  //       role: 'user',
+  //       content: \`I was prompted to enter the answer to this question: ${description}, this is the answer I submitted: \${root.payload.text}.\`,
+  //     },
+  //   ]
+  // `
+
   code += msg_end
   return code
 }
@@ -164,7 +182,7 @@ function llmValidatorCode(fieldDetail) {
   let code = msg_init
   code += `
     msg.transformer.metaData.validationResult["${title}"] = {
-      llm: msg.payload.text,
+      llm: JSON.parse(msg.payload.text),
     }
     ${msg_end}
   `
@@ -484,12 +502,14 @@ export class Flowise {
       // create LLM_TRANSFORMER_NODE
       const llmTransformerNode_id = `${index}`
       const llmTransformerNode_xm = []
+      const questionDescription = field['description']
       llmTransformerNode_xm.push(
         `${llmCurrentInputStoreNode['id']}.data.instance`
       )
       llmTransformerNode = this.llmTransformerNode(
         llmTransformerNode_id,
-        llmTransformerNode_xm
+        llmTransformerNode_xm,
+        questionDescription
       )
 
       // Edge between CODE_RUNNER_LLM_CURRENT_INPUT_STORE_NODE -> LLM_TRANSFORMER_NODE
@@ -798,18 +818,24 @@ export class Flowise {
     return node
   }
 
-  // TODO: Write the PROMPT
-  // TODO: May have to create a key with currentQuestion -> then have to pass the title of the field
-
   // LLM TRANSFORMER NODE Creator
   // Creates a LLM transformer node
   // @PARAMS:
   // id: id of the node
   // xMessage: for data.inputs.xmessage (optional)
-  llmTransformerNode(id, xMessage) {
+  llmTransformerNode(id, xMessage, description) {
     const apiKey = 'sk-proj-' // Replace with your actual OpenAI API key
     const model = 'gpt-4o'
-    const prompt = 'YOUR PROMPT'
+    const prompt = `[       
+      {         
+        role: 'system',         
+        content: 'You are an AI assitant helping a user fill in a form. Your job is to analyse the answer given by the user is valid for the question context provided and reiterate and reassure them if they feel uncomfortable or re-explain if they feel confused. You are to always return the response in the form on JSON with two only two keys, error and message, error is a boolean key which is true in case the answer is not relevant to the question and false if the answer is not relevant or is not validated and message is the respone you want to send to them to help them or thank them. Examples: {error: false, message: thanks for your response }; { error: true, message: your response is not relevant to the question }. Always make sure that the response you send back is parseable by JSON.parse() in NodeJS. only return stringified JSON not provide markdown',       
+      },       
+      {         
+        role: 'user',         
+        content: \`I was prompted to enter the answer to this question: ${description}, this is the answer I submitted: \${root.payload.text}.\`,       
+      },     
+    ]`
     const node = {
       id: `LLM_${id}`,
       position: { x: 3988.7271438010634, y: -661.3071523540692 },
@@ -844,7 +870,7 @@ export class Flowise {
             name: 'xmessage',
             type: 'xMessage',
             list: true,
-            id: 'LLM-input-xmessage-xMessage',
+            id: `LLM_${id}-input-xmessage-xMessage`,
           },
         ],
         inputParams: [
@@ -852,88 +878,88 @@ export class Flowise {
             label: 'API Key',
             name: 'APIKey',
             type: 'string',
-            id: 'LLM-input-APIKey-string',
+            id: `LLM_${id}-input-APIKey-string`,
           },
           {
             label: 'Model',
             name: 'model',
             type: 'string',
-            id: 'LLM-input-model-string',
+            id: `LLM_${id}-input-model-string`,
           },
           {
             label: 'Prompt',
             name: 'prompt',
             type: 'string',
-            id: 'LLM-input-prompt-string',
+            id: `LLM_${id}-input-prompt-string`,
           },
           {
             label: 'Corpus Prompt',
             name: 'corpusPrompt',
             type: 'string',
-            id: 'LLM-input-corpusPrompt-string',
+            id: `LLM_${id}-input-corpusPrompt-string`,
           },
           {
             label: 'Temperature',
             name: 'temperature',
             type: 'number',
-            id: 'LLM-input-temperature-number',
+            id: `LLM_${id}-input-temperature-number`,
           },
           {
             label: 'Enable Stream',
             name: 'enableStream',
             type: 'boolean',
-            id: 'LLM-input-enableStream-boolean',
+            id: `LLM_${id}-input-enableStream-boolean`,
           },
           {
             label: 'Output Language',
             name: 'outputLanguage',
             type: 'string',
-            id: 'LLM-input-outputLanguage-string',
+            id: `LLM_${id}-input-outputLanguage-string`,
           },
           {
             label: 'Outbound URL',
             name: 'outboundURL',
             type: 'string',
-            id: 'LLM-input-outboundURL-string',
+            id: `LLM_${id}-input-outboundURL-string`,
           },
           {
             label: 'Bhashini User ID',
             name: 'bhashiniUserId',
             type: 'string',
-            id: 'LLM-input-bhashiniUserId-string',
+            id: `LLM_${id}-input-bhashiniUserId-string`,
           },
           {
             label: 'Bhashini API Key',
             name: 'bhashiniAPIKey',
             type: 'string',
-            id: 'LLM-input-bhashiniAPIKey-string',
+            id: `LLM_${id}-input-bhashiniAPIKey-string`,
           },
           {
             label: 'Bhashini URL',
             name: 'bhashiniURL',
             type: 'string',
-            id: 'LLM-input-bhashiniURL-string',
+            id: `LLM_${id}-input-bhashiniURL-string`,
           },
           {
             label: 'Provider',
             name: 'provider',
             type: 'string',
-            id: 'LLM-input-provider-string',
+            id: `LLM_${id}-input-provider-string`,
           },
           {
             label: 'Context Length',
             name: 'contextLength',
             type: 'number',
-            id: 'LLM-input-contextLength-number',
+            id: `LLM_${id}-input-contextLength-number`,
           },
           {
             label: 'Language Provider',
             name: 'languageProvider',
             type: 'string',
-            id: 'LLM-input-languageProvider-string',
+            id: `LLM_${id}-input-languageProvider-string`,
           },
           {
-            id: 'LLM-input-sideEffects-json',
+            id: `LLM_${id}-input-sideEffects-json`,
             label: 'SideEffects',
             name: 'sideEffects',
             rows: 2,
@@ -942,24 +968,24 @@ export class Flowise {
         ],
         outputAnchors: [
           {
-            id: 'LLM-output-onSuccess-xMessage',
+            id: `LLM_${id}-output-onSuccess-xMessage`,
             name: 'onSuccess',
             label: 'On Success',
             type: 'xMessage',
           },
           {
-            id: 'LLM-output-onError-xMessage',
+            id: `LLM_${id}-output-onError-xMessage`,
             name: 'onError',
             label: 'On Error',
             type: 'xMessage',
           },
         ],
-        id: 'LLM',
+        id: `LLM_${id}`,
         selected: false,
       },
       width: 300,
       height: 1690,
-      selected: true,
+      selected: false,
       positionAbsolute: { x: 3988.7271438010634, y: -661.3071523540692 },
       dragging: false,
     }
