@@ -81,7 +81,7 @@ class FieldParsers {
     if (fieldDetail['name']) {
       title = fieldDetail['name'].replace(/\s/g, '')
     } else {
-      title = fieldDetail['x-designable-id'].replace
+      title = fieldDetail['x-designable-id']
     }
     // const title = fieldDetail['title'].replace(/\s/g, '') // mustn't have spaces
     const display = this.displayParser(fieldDetail)
@@ -96,6 +96,7 @@ class FieldParsers {
           : [],
       display,
       reactions,
+      required: fieldDetail['required'] || false,
     }
   }
 
@@ -105,7 +106,7 @@ class FieldParsers {
     if (fieldDetail['name']) {
       title = fieldDetail['name'].replace(/\s/g, '')
     } else {
-      title = fieldDetail['x-designable-id'].replace
+      title = fieldDetail['x-designable-id']
     }
     // const title = fieldDetail['title'].replace(/\s/g, '')
     const display = this.displayParser(fieldDetail)
@@ -119,6 +120,7 @@ class FieldParsers {
         options: [],
         display,
         reactions,
+        required: fieldDetail['required'] || false,
       }
     }
     return {
@@ -136,6 +138,7 @@ class FieldParsers {
       }),
       display,
       reactions,
+      required: fieldDetail['required'] || false,
     }
   }
 
@@ -167,13 +170,12 @@ class FieldParsers {
           description: 'Component not found',
           validation: [],
           display: false,
+          required: false,
         }
     }
     return parsedObject
   }
 }
-
-// TODO: Implement this branch when x-validations : ["", ""] is provided
 
 // Formily JSON Parser
 export const parseFormilyJSON = (properties) => {

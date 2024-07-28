@@ -1,25 +1,49 @@
-function emailValidator(msg) {
+async function emailValidator(msg) {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
   const data = msg.payload.text
-  return emailRegex.test(data)
+  const error = emailRegex.test(data)
+  return {
+    error: error,
+    message: error
+      ? 'Your response is not a valid email'
+      : 'Thanks for your response',
+  }
 }
 
-function urlValidator(msg) {
+async function urlValidator(msg) {
   const urlRegex = /^(http|https):\/\/[^ "]+$/
   const data = msg.payload.text
-  return urlRegex.test(data)
+  const error = urlRegex.test(data)
+  return {
+    error: error,
+    message: error
+      ? 'Your response is not a valid URL'
+      : 'Thanks for your response',
+  }
 }
 
-function numberValidator(msg) {
+async function numberValidator(msg) {
   const numberRegex = /^\d+$/
   const data = msg.payload.text
-  return numberRegex.test(data)
+  const error = numberRegex.test(data)
+  return {
+    error: error,
+    message: error
+      ? 'Your response is not a valid number'
+      : 'Thanks for your response',
+  }
 }
 
-function dateValidator(msg) {
+async function dateValidator(msg) {
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/
   const data = msg.payload.text
-  return dateRegex.test(data)
+  const error = dateRegex.test(data)
+  return {
+    error: error,
+    message: error
+      ? 'Your response is not a valid date'
+      : 'Thanks for your response',
+  }
 }
 
 async function callOpenAI(msg) {
