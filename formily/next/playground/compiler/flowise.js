@@ -158,19 +158,9 @@ function llmCurrentInputStore(fieldDetail) {
 
   // // llm prompt
 
-  // code += `
-  //   msg.transformer.metaData.prompt = [
-  //     {
-  //       role: 'system',
-  //       content:
-  //         'You are an AI assitant helping a user fill in a form. Your job is to analyse the answer given by the user is valid for the question context provided and reiterate and reassure them if they feel uncomfortable or re-explain if they feel confused. You are to always return the response in the form on JSON with two only two keys, error and message, error is a boolean key which is true in case the answer is not relevant to the question and false if the answer is not relevant or is not validated and message is the respone you want to send to them to help them or thank them. Examples: {error: false, message: thanks for your response }; { error: true, message: your response is not relevant to the question }. Always make sure that the response you send back is parseable by JSON.parse() in NodeJS.',
-  //     },
-  //     {
-  //       role: 'user',
-  //       content: \`I was prompted to enter the answer to this question: ${description}, this is the answer I submitted: \${root.payload.text}.\`,
-  //     },
-  //   ]
-  // `
+  code += `
+    msg.transformer.metaData.prompt = \`You are an AI assitant helping a user fill in a form. Your job is to analyse the answer given by the user is valid for the question context provided and reiterate and reassure them if they feel uncomfortable or re-explain if they feel confused but never return error as false in case the user says they don't want to answer, always consider that as an error input and send a warm message explaining them it's fine and ask them to input again. You are to always return the response in the form on JSON with two only two keys, error and message, error is a boolean key which is true in case the answer is not relevant to the question and false if the answer is not relevant or is not validated and message is the respone you want to send to them to help them or thank them. Examples: {error: false, message: thanks for your response }; { error: true, message: your response is not relevant to the question }. Always make sure that the response you send back is parseable by JSON.parse() in NodeJS. only return stringified JSON not provide markdown. The user was prompted to give an answer to the question "${description}" and the user responded with \${msg.payload.text}.\`;
+  `
 
   code += msg_end
   return code
@@ -826,16 +816,16 @@ export class Flowise {
   llmTransformerNode(id, xMessage, description) {
     const apiKey = 'sk-proj-' // Replace with your actual OpenAI API key
     const model = 'gpt-4o'
-    const prompt = `[       
-      {         
-        role: 'system',         
-        content: 'You are an AI assitant helping a user fill in a form. Your job is to analyse the answer given by the user is valid for the question context provided and reiterate and reassure them if they feel uncomfortable or re-explain if they feel confused. You are to always return the response in the form on JSON with two only two keys, error and message, error is a boolean key which is true in case the answer is not relevant to the question and false if the answer is not relevant or is not validated and message is the respone you want to send to them to help them or thank them. Examples: {error: false, message: thanks for your response }; { error: true, message: your response is not relevant to the question }. Always make sure that the response you send back is parseable by JSON.parse() in NodeJS. only return stringified JSON not provide markdown',       
-      },       
-      {         
-        role: 'user',         
-        content: \`I was prompted to enter the answer to this question: ${description}, this is the answer I submitted: \${root.payload.text}.\`,       
-      },     
-    ]`
+    // const prompt = `[
+    //   {
+    //     role: 'system',
+    //     content: 'You are an AI assitant helping a user fill in a form. Your job is to analyse the answer given by the user is valid for the question context provided and reiterate and reassure them if they feel uncomfortable or re-explain if they feel confused. You are to always return the response in the form on JSON with two only two keys, error and message, error is a boolean key which is true in case the answer is not relevant to the question and false if the answer is not relevant or is not validated and message is the respone you want to send to them to help them or thank them. Examples: {error: false, message: thanks for your response }; { error: true, message: your response is not relevant to the question }. Always make sure that the response you send back is parseable by JSON.parse() in NodeJS. only return stringified JSON not provide markdown',
+    //   },
+    //   {
+    //     role: 'user',
+    //     content: \`I was prompted to enter the answer to this question: ${description}, this is the answer I submitted: \${root.payload.text}.\`,
+    //   },
+    // ]`
     const node = {
       id: `LLM_${id}`,
       position: { x: 3988.7271438010634, y: -661.3071523540692 },
@@ -850,7 +840,7 @@ export class Flowise {
           xmessage: xMessage,
           APIKey: apiKey,
           model: model,
-          prompt: prompt,
+          prompt: '',
           corpusPrompt: '',
           temperature: '',
           enableStream: false,
