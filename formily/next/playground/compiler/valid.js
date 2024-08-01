@@ -34,11 +34,21 @@ function dateValidator(data) {
   }
 }
 
+function phoneValidator(data) {
+  const phoneRegex = /^(\\+91[-\\s]?)?[6-9]\\d{9}$/
+  const error = phoneRegex.test(data)
+  return {
+    error: !error,
+    message: !error ? 'Your response is not a valid phone number' : 'Thanks for your response',
+  }
+}
+
 const validator = {
   url: urlValidator,
   email: emailValidator,
   date: dateValidator,
   number: numberValidator,
+  phone: phoneValidator,
 }`
 
 export default valid
