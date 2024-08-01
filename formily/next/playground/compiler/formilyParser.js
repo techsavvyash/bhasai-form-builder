@@ -65,14 +65,32 @@ class FieldParsers {
     // "{{$deps.v_ef781vv5r3v == \"I1\"\r\n&&\r\n$deps.v_9bdqtfzwmd7 == \"Class 1\"}}"
     if (!fieldDetail['x-reactions']) return true
     if (fieldDetail['x-reactions'] == {}) return true
+    if (fieldDetail['x-reactions']['fulfill'] == {}) return true
+    if (fieldDetail['x-reactions']['fulfill']['state'] == {}) return true
+    if (fieldDetail['x-reactions']['fulfill']['state']['visible'] == {})
+      return true
     const dependencies = fieldDetail['x-reactions']['dependencies']
     const visibleCode = extractInnerString(
       fieldDetail['x-reactions']['fulfill']['state']['visible']
     )
     // "$deps.v_ef781vv5r3v == \"I1\"\r\n&&\r\n$deps.v_9bdqtfzwmd7 == \"Class 1\""
     const titles = getTitleFromDependency(dependencies, this.formilyJSON)
+    if (!visibleCode) return true
+    if (!titles) return true
     const reactions = replaceDepsWithFormInput(visibleCode, titles)
     return reactions
+  }
+
+  // VALIDATION PARSER:
+  // Parses the 'x-validator' field in the JSON schema
+  // Return Type: An array of validation functions
+  validationParser(validations) {
+    const validationArray = []
+    if (typeof validations === 'string') {
+      validationArray.push(validations)
+      return validationArray
+    }
+    return validations.length != 0 ? validations : validationArray
   }
 
   // INPUT FIELD PARSER
@@ -90,10 +108,7 @@ class FieldParsers {
       title,
       component: 'Input',
       description: fieldDetail['description'] || 'Description not provided',
-      validation:
-        fieldDetail['x-validator'].length != 0
-          ? fieldDetail['x-validator']
-          : [],
+      validation: this.validationParser(fieldDetail['x-validator']),
       display,
       reactions,
       required: fieldDetail['required'] || false,

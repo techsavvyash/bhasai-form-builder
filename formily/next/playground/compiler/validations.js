@@ -46,6 +46,18 @@ async function dateValidator(msg) {
   }
 }
 
+async function phoneValidator(msg) {
+  const phoneRegex = /^(\+91[-\s]?)?[6-9]\d{9}$/
+  const data = msg.payload.text
+  const error = phoneRegex.test(data)
+  return {
+    error: error,
+    message: error
+      ? 'Your response is not a valid phone number'
+      : 'Thanks for your response',
+  }
+}
+
 async function callOpenAI(msg) {
   const url = 'https://api.openai.com/v1/chat/completions' // Replace 'davinci-codex' with the appropriate model name if needed
   const apiKey = 'sk-proj-' // Replace with your actual OpenAI API key
@@ -94,5 +106,6 @@ const validator = {
   email: emailValidator,
   date: dateValidator,
   number: numberValidator,
+  phone: phoneValidator,
   llm: callOpenAI,
 }
