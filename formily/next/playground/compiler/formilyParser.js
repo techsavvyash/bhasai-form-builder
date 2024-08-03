@@ -108,7 +108,9 @@ class FieldParsers {
       title,
       component: 'Input',
       description: fieldDetail['description'] || 'Description not provided',
-      validation: this.validationParser(fieldDetail['x-validator']),
+      validation: fieldDetail['x-validator']
+        ? this.validationParser(fieldDetail['x-validator'])
+        : [],
       display,
       reactions,
       required: fieldDetail['required'] || false,
