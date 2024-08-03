@@ -145,7 +145,7 @@ function llmCurrentInputStore(fieldDetail) {
   `
   code += `
     if(msg.payload.text == "SKIP") {
-      msg.transformer.metaData.validationResult.${title} = {
+      msg.transformer.metaData.validationResult["${title}"] = {
         "skip-validation": {
           error: false,
           message: "User Skipped the message"
