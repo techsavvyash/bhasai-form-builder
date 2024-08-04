@@ -2,8 +2,8 @@
 
 ## Formily: Form Builder Dashboard
 
-Lets have a look at the dashboard
-![](./assets/dashboard.png)
+Lets have a look at the dashboard<br>
+![](./assets/dashboard.png#pic)
 
 ### Components Pane:
 
@@ -51,7 +51,7 @@ Lets see creating fields in the Form Builder
 ### `Input` Field:
 
 After Dragging and Dropping the Input field component, it would look like this.
-![](./assets/input_1.png)
+![](./assets/input_1.png#pic)
 
 #### Input Field Properties
 
@@ -68,13 +68,13 @@ Lets briefly know about the different properties for the input field:
 - `Reactions`: This will be used in case of Decision based forms. It is mostly used corresponding to a `Select` field, but can be used with `Input` in some cases. We will get into Reactions in the [How to create Decision based Forms](#how-to-create-decision-based-forms) section.
 - `Validators`: It is used to add validations to the field. There are somewhat 10 different validators present in the list, but only 5 are functional currently, they are `url`, `email`, `number` (whole numbers), `phone` (for phone numbers, only Indian numbers), `llm`.
 - `Required`: Its very evident from its name.
-
-![Input field After setting Properties](./assets/input_2.png)
+  <br>
+  ![Input field After setting Properties](./assets/input_2.png#pic)
 
 ### `Select` Field:
 
-After Dragging and Dropping the Select field component, it would look like this.
-![](./assets/select_1.png)
+After Dragging and Dropping the Select field component, it would look like this.<br>
+![](./assets/select_1.png#pic)
 
 #### Select Field Properties
 
@@ -88,15 +88,15 @@ Lets briefly know about the different properties for the select field:
 - `Display State`: You can use it to hide any field if you dont want to ask that question in the survey. It has 4 options.
   - `Inherit` and `Visible`: Will keep the question visible and that would be asked to the user.
   - `Hidden` and `None` : Will remove the question from the form builder and it won't be asked as a question to the user.
-- `Options`: It helps to add options to the select field. See this picture to get an idea of how Options are configured.
-  ![Configuring Options](./assets/options.png)
+- `Options`: It helps to add options to the select field. See this picture to get an idea of how Options are configured.<br>
+  ![Configuring Options](./assets/options.png#pic)<br>
   You have to use the `Add Node` button to add a new option (or Node). And then edit the `value` property of the two fields in the right side.
 - `Reactions`: This will be used in case of Decision based forms. It is mostly used corresponding to a `Select` field, but can be used with `Input` in some cases. We will get into Reactions in the [How to create Decision based Forms](#how-to-create-decision-based-forms) section.
 - `Validators`: There is no use of validators for Select type fields.
 - `Required`: There is no use of Required field for Select type fields as _Select fields are always required_.
 
-![Select field Properties](./assets/select_3.png)
-![Input field After setting Properties](./assets/select_2.png)
+![Select field Properties](./assets/select_3.png#pic)
+![Input field After setting Properties](./assets/select_2.png#pic)
 
 <!-- ### `Upload` Field:  -->
 <!-- To be added -->
@@ -107,38 +107,36 @@ Lets consider this example.
 
 > You have a select field (Class) with options (Class 1 and Class 2). If `Class 1` is selected I will ask the user to write `marks of UKG`. And if `Class 2` is selected I will ask the user to write `marks of Class 1`.
 
-1. Create the "class" (select) field.
-   ![](./assets/select_3.png)
-   ![](./assets/options.png)
-2. Create the two input fields.
-   ![](./assets/decision_1.png)
+1. Create the "class" (select) field.<br>
+   ![](./assets/select_3.png#pic)<br>
+   ![](./assets/options.png#pic)<br>
+2. Create the two input fields.<br>
+   ![](./assets/decision_1.png#pic)<br>
 3. Configure the Reactions for each Input field.
    - Select the Input Fields one by one and click on the `Reactions`.
    - Set the Reactions
 
-#### ⭐ Logic Behind `Reactions` ⭐
+## ⭐ Logic Behind `Reactions` ⭐
 
 Lets see the actual logic behind setting the reactions.
 
-**Reactions are basically made so that the selected Field may react to the inputs given by the previous inputs**
+**Reactions are basically made so that the selected Field may react to the inputs given to the previous inputs by the user.**
 
 Here I will only show the Reactions that is needed for making Decision based forms
-See this picture
-![Configuring Reactions](./assets/reactions.png)
+See this picture<br>
+![Configuring Reactions](./assets/reactions.png#pic)
 
 > `Associated Fields`:<br>
 >
 > > At allows to select the associated fields our reactions would depend upon.<br>
 > > Here I have chosen 'Class' and field property 'value' which means I have some dependencies which depends on the _value_ property of field with _title_ 'Class'. <br>
 > > If you remember properly, 'Class' was a select field, having two nodes in _options_. And we had set two _label_s and \_value_s there. The Values were "Class 1" and "Class 2".<br>
-> > The `Variable Name` => `$deps | class` indicates that we have to use `$deps.class` to access the \_value_ selected by the user for the field `Class`<br>
-> > **NOTE: "class" coming in `$deps` is actually the _Name_ we set to the field. If _Name_ was not set then we will get a random Unique ID in place "class" in `$deps`**
+> > The `Variable Name` => `$deps | class` indicates that we have to use `$deps.class` to access the \_value_ selected by the user for the field `Class`<br> > > **NOTE: "class" coming in `$deps` is actually the _Name_ we set to the field. If _Name_ was not set then we will get a random Unique ID in place "class" in `$deps`**
 
 > `Property Reactions`:<br>
 >
 > > It is used to select the type of reaction. No need to go deep in the different types, we will always select the `Show/None` option (which is also by default).<br>
-> > We have to pass a `boolean expression` in this part. Like its written<br>
-> > `$deps.class == "Class 1"`<br>
+> > We have to pass a `boolean expression` in this part. Like its written<br> > > `$deps.class == "Class 1"`<br>
 > > If this expression resulted in `true` then the selected input field ("Marks of UKG" in this case) will be visible.<br>
 > > Hence "Marks of UKG" input field will only be visible if we select "Class 1" in the "Class" select field.
 
@@ -158,3 +156,16 @@ Here we have two ways for that:
 ### Demo Video
 
 <video src="./assets/demo.mp4" controls>Demo Video</video>
+
+<style>
+  img[src$="#pic"]{
+      text-align: center;
+      width: 70%;
+    }
+  @media only screen and (max-width: 960px){
+    img[src$="#pic"]{
+      text-align: center;
+      width: 100%;
+    }
+  }
+</style>
