@@ -858,7 +858,8 @@ export class Flowise {
   // id: id of the node
   // xMessage: for data.inputs.xmessage (optional)
   llmTransformerNode(id, xMessage, description) {
-    const apiKey = 'sk-proj-' // Replace with your actual OpenAI API key
+    const APIKEY = process.env.OPENAI_API
+    const apiKey = APIKEY || 'sk-proj-' // Replace with your actual OpenAI API key
     const model = 'gpt-4o-mini'
     // const prompt = `[
     //   {
