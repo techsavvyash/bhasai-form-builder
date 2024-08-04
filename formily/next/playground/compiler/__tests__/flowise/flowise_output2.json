@@ -13,7 +13,9 @@
         },
         "category": "Miscellaneous",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "Start pointer Points to node  ",
         "inputParams": [],
         "inputAnchors": [],
@@ -54,7 +56,9 @@
         "type": "Output",
         "category": "GenericTransformer",
         "description": "A code runner capable of running custom JS code.",
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "inputs": {
           "xmessage": [
             "CODE_RUNNER_isVISIBLE_0.data.instance",
@@ -129,7 +133,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\nlet formInput = msg.transformer.metaData.formInput;\nif(!(true)) throw new Error('Not Visible');\nmsg.transformer.metaData.required = {\"qrxhfgc3vqp\" : false};\nreturn JSON.stringify(msg);",
-          "xmessage": ["start.data.instance"]
+          "xmessage": [
+            "start.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -137,7 +143,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -203,7 +211,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\nmsg.payload.text = \"First Name\";\nmsg.transformer.metaData.currentQuestion=\"First Name\"\n\n    const currentInput = msg.transformer.metaData.currentInput;\n    if(currentInput){\n      currentInput[\"qrxhfgc3vqp\"] = {\n        text: \"\",\n        retries: 0\n      };\n    }\n    else {\n      msg.transformer.metaData.currentInput = {\n        \"qrxhfgc3vqp\": {\n          text: \"\",\n          retries: 0\n        }\n      };  \n    }\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_isVISIBLE_0.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_isVISIBLE_0.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -211,7 +221,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -286,7 +298,9 @@
         },
         "category": "StateRestoreTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A transformer which restores state to a specific node after sending a message to user.",
         "inputParams": [
           {
@@ -339,7 +353,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\nfunction emailValidator(data) {\n  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/\n  const error = emailRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid email' : 'Thanks for your response',\n  }\n}\n\nfunction urlValidator(data) {\n  const urlRegex = /^(http|https):\\/\\/[^ \"]+$/\n  const error = urlRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid URL' : 'Thanks for your response',\n  }\n}\n\nfunction numberValidator(data) {\n  const numberRegex = /^\\d+$/\n  const error = numberRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid number' : 'Thanks for your response',\n  }\n}\n\nfunction dateValidator(data) {\n  const dateRegex = /^\\d{4}-\\d{2}-\\d{2}$/\n  const error = dateRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid date' : 'Thanks for your response',\n  }\n}\n\nfunction phoneValidator(data) {\n  const phoneRegex = /^(\\+91[-\\s]?)?[6-9]\\d{9}$/\n  const error = phoneRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid phone number' : 'Thanks for your response',\n  }\n}\n\nconst validator = {\n  url: urlValidator,\n  email: emailValidator,\n  date: dateValidator,\n  number: numberValidator,\n  phone: phoneValidator,\n}\n    if(!msg.transformer.metaData.validationResult) {\n      msg.transformer.metaData.validationResult = {\n        \"qrxhfgc3vqp\": {}\n      };\n    }\n    else{\n      msg.transformer.metaData.validationResult = {\n        \"qrxhfgc3vqp\": {}\n      };\n    }\n  \n  if(msg.payload.text == \"SKIP\") {\n    msg.transformer.metaData.validationResult[\"qrxhfgc3vqp\"] = {\n      \"skip-validation\": {\n        error: false,\n        message: \"User Skipped the message\"\n      }\n    }\n    return JSON.stringify(msg);\n  }\n  \n  msg.transformer.metaData.currentInput[\"qrxhfgc3vqp\"].text = msg.payload.text;\n  return JSON.stringify(msg);",
-          "xmessage": ["USER_FEEDBACK_LOOP_0.data.instance"]
+          "xmessage": [
+            "USER_FEEDBACK_LOOP_0.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -347,7 +363,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -413,7 +431,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\n\n    if(msg.transformer.metaData.validationResult[\"qrxhfgc3vqp\"][\"skip-validation\"]){\n      let formInput = msg.transformer.metaData.formInput;\n      if(formInput){\n        formInput = {...formInput, \"qrxhfgc3vqp\": \"\"};\n      } else {\n        formInput = {\"qrxhfgc3vqp\": \"\"}\n      }\n      msg.transformer.metaData.formInput = formInput;\n      return JSON.stringify(msg);\n    }\n  \n    let formInput = msg.transformer.metaData.formInput;\n    const inputText = msg.transformer.metaData.currentInput[\"qrxhfgc3vqp\"].text;\n    if(formInput){\n      formInput = {...formInput, \"qrxhfgc3vqp\": inputText !=\"SKIP\" ? inputText : \"\"};\n    } else {\n      formInput = {\"qrxhfgc3vqp\": inputText !=\"SKIP\" ? inputText : \"\"};\n    }\n    msg.transformer.metaData.formInput = formInput;\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_RUN_VALIDATOR_0.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_RUN_VALIDATOR_0.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -421,7 +441,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -487,7 +509,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\n\n    msg.transformer.metaData.currentInput[\"qrxhfgc3vqp\"].retries += 1; \n  \n    if(msg.transformer.metaData.currentInput[\"qrxhfgc3vqp\"].retries >= 2) {\n      if(!msg.transformer.metaData.required[\"qrxhfgc3vqp\"]){\n        msg.payload.text = \"You have exceeded the number of retries for this field. If you wish you can Use the 'SKIP' button to skip this field. Contact the admin if you want to restart the survey.\";\n        msg.payload.buttonChoices = {\n          header: \"You have exceeded the number of retries for this field. If you wish you can Use the 'SKIP' button to skip this field.\",\n          choices: [\n          {\n            text: \"SKIP\",\n            key: \"SKIP\",\n            isEnabled: true,\n            showTextInput: true\n          },\n          ]\n        }\n      }else{\n        msg.payload.text += \" This is a mandatory question you can't skip it.\";\n      }\n    }\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_STORE_0.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_STORE_0.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -495,7 +519,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -572,7 +598,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -638,7 +666,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\nmsg.payload.text = \"Last Name\";\nmsg.transformer.metaData.currentQuestion=\"Last Name\"\n\n    const currentInput = msg.transformer.metaData.currentInput;\n    if(currentInput){\n      currentInput[\"apy72yxa6ve\"] = {\n        text: \"\",\n        retries: 0\n      };\n    }\n    else {\n      msg.transformer.metaData.currentInput = {\n        \"apy72yxa6ve\": {\n          text: \"\",\n          retries: 0\n        }\n      };  \n    }\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_isVISIBLE_1.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_isVISIBLE_1.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -646,7 +676,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -721,7 +753,9 @@
         },
         "category": "StateRestoreTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A transformer which restores state to a specific node after sending a message to user.",
         "inputParams": [
           {
@@ -774,7 +808,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\nfunction emailValidator(data) {\n  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/\n  const error = emailRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid email' : 'Thanks for your response',\n  }\n}\n\nfunction urlValidator(data) {\n  const urlRegex = /^(http|https):\\/\\/[^ \"]+$/\n  const error = urlRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid URL' : 'Thanks for your response',\n  }\n}\n\nfunction numberValidator(data) {\n  const numberRegex = /^\\d+$/\n  const error = numberRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid number' : 'Thanks for your response',\n  }\n}\n\nfunction dateValidator(data) {\n  const dateRegex = /^\\d{4}-\\d{2}-\\d{2}$/\n  const error = dateRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid date' : 'Thanks for your response',\n  }\n}\n\nfunction phoneValidator(data) {\n  const phoneRegex = /^(\\+91[-\\s]?)?[6-9]\\d{9}$/\n  const error = phoneRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid phone number' : 'Thanks for your response',\n  }\n}\n\nconst validator = {\n  url: urlValidator,\n  email: emailValidator,\n  date: dateValidator,\n  number: numberValidator,\n  phone: phoneValidator,\n}\n    if(!msg.transformer.metaData.validationResult) {\n      msg.transformer.metaData.validationResult = {\n        \"apy72yxa6ve\": {}\n      };\n    }\n    else{\n      msg.transformer.metaData.validationResult = {\n        \"apy72yxa6ve\": {}\n      };\n    }\n  \n  if(msg.payload.text == \"SKIP\") {\n    msg.transformer.metaData.validationResult[\"apy72yxa6ve\"] = {\n      \"skip-validation\": {\n        error: false,\n        message: \"User Skipped the message\"\n      }\n    }\n    return JSON.stringify(msg);\n  }\n  \n  msg.transformer.metaData.currentInput[\"apy72yxa6ve\"].text = msg.payload.text;\n  return JSON.stringify(msg);",
-          "xmessage": ["USER_FEEDBACK_LOOP_1.data.instance"]
+          "xmessage": [
+            "USER_FEEDBACK_LOOP_1.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -782,7 +818,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -848,7 +886,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\n\n    if(msg.transformer.metaData.validationResult[\"apy72yxa6ve\"][\"skip-validation\"]){\n      let formInput = msg.transformer.metaData.formInput;\n      if(formInput){\n        formInput = {...formInput, \"apy72yxa6ve\": \"\"};\n      } else {\n        formInput = {\"apy72yxa6ve\": \"\"}\n      }\n      msg.transformer.metaData.formInput = formInput;\n      return JSON.stringify(msg);\n    }\n  \n    let formInput = msg.transformer.metaData.formInput;\n    const inputText = msg.transformer.metaData.currentInput[\"apy72yxa6ve\"].text;\n    if(formInput){\n      formInput = {...formInput, \"apy72yxa6ve\": inputText !=\"SKIP\" ? inputText : \"\"};\n    } else {\n      formInput = {\"apy72yxa6ve\": inputText !=\"SKIP\" ? inputText : \"\"};\n    }\n    msg.transformer.metaData.formInput = formInput;\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_RUN_VALIDATOR_1.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_RUN_VALIDATOR_1.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -856,7 +896,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -922,7 +964,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\n\n    msg.transformer.metaData.currentInput[\"apy72yxa6ve\"].retries += 1; \n  \n    if(msg.transformer.metaData.currentInput[\"apy72yxa6ve\"].retries >= 2) {\n      if(!msg.transformer.metaData.required[\"apy72yxa6ve\"]){\n        msg.payload.text = \"You have exceeded the number of retries for this field. If you wish you can Use the 'SKIP' button to skip this field. Contact the admin if you want to restart the survey.\";\n        msg.payload.buttonChoices = {\n          header: \"You have exceeded the number of retries for this field. If you wish you can Use the 'SKIP' button to skip this field.\",\n          choices: [\n          {\n            text: \"SKIP\",\n            key: \"SKIP\",\n            isEnabled: true,\n            showTextInput: true\n          },\n          ]\n        }\n      }else{\n        msg.payload.text += \" This is a mandatory question you can't skip it.\";\n      }\n    }\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_STORE_1.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_STORE_1.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -930,7 +974,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -1007,7 +1053,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -1073,7 +1121,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\nmsg.payload.text = \"Father's Name\";\nmsg.transformer.metaData.currentQuestion=\"Father's Name\"\n\n    const currentInput = msg.transformer.metaData.currentInput;\n    if(currentInput){\n      currentInput[\"hdf85u4rk5m\"] = {\n        text: \"\",\n        retries: 0\n      };\n    }\n    else {\n      msg.transformer.metaData.currentInput = {\n        \"hdf85u4rk5m\": {\n          text: \"\",\n          retries: 0\n        }\n      };  \n    }\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_isVISIBLE_2.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_isVISIBLE_2.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -1081,7 +1131,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -1156,7 +1208,9 @@
         },
         "category": "StateRestoreTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A transformer which restores state to a specific node after sending a message to user.",
         "inputParams": [
           {
@@ -1209,7 +1263,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\nfunction emailValidator(data) {\n  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/\n  const error = emailRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid email' : 'Thanks for your response',\n  }\n}\n\nfunction urlValidator(data) {\n  const urlRegex = /^(http|https):\\/\\/[^ \"]+$/\n  const error = urlRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid URL' : 'Thanks for your response',\n  }\n}\n\nfunction numberValidator(data) {\n  const numberRegex = /^\\d+$/\n  const error = numberRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid number' : 'Thanks for your response',\n  }\n}\n\nfunction dateValidator(data) {\n  const dateRegex = /^\\d{4}-\\d{2}-\\d{2}$/\n  const error = dateRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid date' : 'Thanks for your response',\n  }\n}\n\nfunction phoneValidator(data) {\n  const phoneRegex = /^(\\+91[-\\s]?)?[6-9]\\d{9}$/\n  const error = phoneRegex.test(data)\n  return {\n    error: !error,\n    message: !error ? 'Your response is not a valid phone number' : 'Thanks for your response',\n  }\n}\n\nconst validator = {\n  url: urlValidator,\n  email: emailValidator,\n  date: dateValidator,\n  number: numberValidator,\n  phone: phoneValidator,\n}\n    if(!msg.transformer.metaData.validationResult) {\n      msg.transformer.metaData.validationResult = {\n        \"hdf85u4rk5m\": {}\n      };\n    }\n    else{\n      msg.transformer.metaData.validationResult = {\n        \"hdf85u4rk5m\": {}\n      };\n    }\n  \n  if(msg.payload.text == \"SKIP\") {\n    msg.transformer.metaData.validationResult[\"hdf85u4rk5m\"] = {\n      \"skip-validation\": {\n        error: false,\n        message: \"User Skipped the message\"\n      }\n    }\n    return JSON.stringify(msg);\n  }\n  \n  msg.transformer.metaData.currentInput[\"hdf85u4rk5m\"].text = msg.payload.text;\n  return JSON.stringify(msg);",
-          "xmessage": ["USER_FEEDBACK_LOOP_2.data.instance"]
+          "xmessage": [
+            "USER_FEEDBACK_LOOP_2.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -1217,7 +1273,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -1283,7 +1341,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\n\n    if(msg.transformer.metaData.validationResult[\"hdf85u4rk5m\"][\"skip-validation\"]){\n      let formInput = msg.transformer.metaData.formInput;\n      if(formInput){\n        formInput = {...formInput, \"hdf85u4rk5m\": \"\"};\n      } else {\n        formInput = {\"hdf85u4rk5m\": \"\"}\n      }\n      msg.transformer.metaData.formInput = formInput;\n      return JSON.stringify(msg);\n    }\n  \n    let formInput = msg.transformer.metaData.formInput;\n    const inputText = msg.transformer.metaData.currentInput[\"hdf85u4rk5m\"].text;\n    if(formInput){\n      formInput = {...formInput, \"hdf85u4rk5m\": inputText !=\"SKIP\" ? inputText : \"\"};\n    } else {\n      formInput = {\"hdf85u4rk5m\": inputText !=\"SKIP\" ? inputText : \"\"};\n    }\n    msg.transformer.metaData.formInput = formInput;\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_RUN_VALIDATOR_2.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_RUN_VALIDATOR_2.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -1291,7 +1351,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
@@ -1357,7 +1419,9 @@
         "label": "Code Runner Transformer",
         "inputs": {
           "code": "const msg = JSON.parse($0);\n\n    msg.transformer.metaData.currentInput[\"hdf85u4rk5m\"].retries += 1; \n  \n    if(msg.transformer.metaData.currentInput[\"hdf85u4rk5m\"].retries >= 2) {\n      if(!msg.transformer.metaData.required[\"hdf85u4rk5m\"]){\n        msg.payload.text = \"You have exceeded the number of retries for this field. If you wish you can Use the 'SKIP' button to skip this field. Contact the admin if you want to restart the survey.\";\n        msg.payload.buttonChoices = {\n          header: \"You have exceeded the number of retries for this field. If you wish you can Use the 'SKIP' button to skip this field.\",\n          choices: [\n          {\n            text: \"SKIP\",\n            key: \"SKIP\",\n            isEnabled: true,\n            showTextInput: true\n          },\n          ]\n        }\n      }else{\n        msg.payload.text += \" This is a mandatory question you can't skip it.\";\n      }\n    }\n  return JSON.stringify(msg);",
-          "xmessage": ["CODE_RUNNER_STORE_2.data.instance"]
+          "xmessage": [
+            "CODE_RUNNER_STORE_2.data.instance"
+          ]
         },
         "outputs": {
           "onError": "",
@@ -1365,7 +1429,9 @@
         },
         "category": "GenericTransformer",
         "selected": false,
-        "baseClasses": ["xMessage"],
+        "baseClasses": [
+          "xMessage"
+        ],
         "description": "A code runner capable of running custom JS code.",
         "inputParams": [
           {
