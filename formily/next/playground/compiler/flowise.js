@@ -5,104 +5,18 @@ import { INPUT_FIELD_TYPES } from './fieldTypes'
 import { startNode, endNode } from './start_end'
 import validations from './valid'
 
-// Default Code Text For Code Runner Nodes
-const msg_init = 'const msg = JSON.parse($0);\n'
-const msg_end = 'return JSON.stringify(msg);'
-
-// IS VISIBLE CODE TEXT
-function isVisibleCode(fieldDetail) {
-  let code = msg_init
-  // If field is not visible, throw an error to go to next group
-  if (fieldDetail['display'] === false) {
-    code += `throw new Error('Not Visible');\n`
-  }
-  // If field is visible, check for reactions
-  if (fieldDetail['reactions']) {
-    code += `let formInput = msg.transformer.metaData.formInput;\n`
-    // If reactions are not fulfilled, throw an error to go to next group
-    code += `if(!(${fieldDetail['reactions']})) throw new Error('Not Visible');\n`
-  }
-  code += msg_end
-  return code
-}
-
-// ASK QUESTION CODE TEXT
-function AskQuestion(fieldDetail) {
-  const description = fieldDetail['description'] || 'Description not provided'
-  const component = fieldDetail['component']
-  let code = msg_init
-  code += `msg.payload.text = "${description}";\n`
-  switch (component) {
-    case INPUT_FIELD_TYPES.INPUT:
-      break
-    case INPUT_FIELD_TYPES.SELECT:
-      code += Select(fieldDetail)
-      break
-    case INPUT_FIELD_TYPES.TEXTAREA:
-      break
-    default:
-      break
-  }
-  code += msg_end
-  return code
-}
-
-// Store INPUT in formInput and Validate it
-function GetInput(title, validation) {
-  // Validation Code Text
-  let validationCode = ''
-  if (validation !== 'none') {
-    // const validationPath = path.resolve(__dirname, 'validations.js')
-    try {
-      // let validationFile = null;
-      // fs.readFile(validationPath, 'utf8', (err, data) => {
-      //   if (err) {
-      //     console.error('Error reading validation file:', err)
-      //     throw err
-      //   }
-      //   validationFile = data;
-      // })
-      validationCode =
-        validations +
-        // validationFile +
-        `if(!validator["${validation}"](msg.payload.text)) throw new Error('Wrong input, Please Retype');\n`
-    } catch (err) {
-      console.error('Error reading validation file:', err)
-      throw err
-    }
-  }
-
-  // Store Input in formInput
-  const s1 = `let formInput = msg.transformer.metaData.formInput;\n`
-  const s2 = `if(formInput){\n`
-  const s3 = `formInput = {...formInput, \"${title}\": msg.payload.text};\n`
-  const s4 = `} else {\n`
-  const s5 = `formInput = {\"${title}\": msg.payload.text};\n`
-  const s6 = `}\n`
-  const s7 = `msg.transformer.metaData.formInput = formInput;\n`
-
-  const storeInput = s1 + s2 + s3 + s4 + s5 + s6 + s7
-
-  return msg_init + validationCode + storeInput + msg_end
-}
-
-// Validation msg Code Text
-function ValidationMsg(validation) {
-  const code = `const msg = JSON.parse($0);\nmsg.payload.text = \"Wrong input, Please input a ${validation}\";\nreturn JSON.stringify(msg);`
-  return code
-}
-
-// HANDLING code text for Different FIELD TYPES
-// HANDLE code text for SELECT FIELD
-function Select(fieldDetail) {
-  const buttonChoices = 'msg.payload.buttonChoices ='
-  const optionsJSON = JSON.stringify({
-    header: fieldDetail['description'],
-    choices: fieldDetail['options'],
-  })
-  const options = `${optionsJSON};\n`
-  return buttonChoices + options
-}
+// IMPORTING CODES
+import {
+  isVisibleCode,
+  AskQuestion,
+  runValidatorCode,
+  llmCurrentInputStore,
+  llmSkipCode,
+  llmValidatorCode,
+  storeInputCode,
+  ValidationMsg,
+  Select,
+} from './logic/codes'
 
 // FLOWISE CLASS: Manages the flowise Graph
 export class Flowise {
@@ -224,6 +138,8 @@ export class Flowise {
       isVisibleNode_Code,
       []
     )
+    const validationTypes = field['validation'] // array of validation types
+    const hasLLmValidation = validationTypes.includes('llm') // boolean
 
     // create CODE_RUNNER_ASK_NODE
     const askNode_id = `ASK_${index}`
@@ -246,26 +162,140 @@ export class Flowise {
     // Edge between CODE_RUNNER_ASK_NODE -> USER_FEEDBACK_LOOP_NODE
     const ask_UserFeedback_edge = this.createEdge(askNode, userFeedbackLoopNode)
 
-    // create CODE_RUNNER_STORE_NODE
+    // // // DECLARING VARIABLES in COMMON SCOPES // // //
+    let llmCurrentInputStoreNode
+    let userFeedback_llmCurrentInputStore_edge
+    let llmSkipNode
+    let llmCurrentInputStore_llmSkip_edge
+    let llmTransformerNode
+    let llmSkip_llmTransformer_edge
+    let llmValidatorNode
+    let llmTransformer_llmValidator_edge
+
+    let runValidatorNode
+    let userFeedback_runValidator_edge
+
+    // if(there is llm validation) ->  llmCurrentInputStore -> llmTransformer -> llmValidator -> storeInput -> validationMsg
+    if (hasLLmValidation) {
+      // create CODE_RUNNER_LLM_CURRENT_INPUT_STORE_NODE
+      const llmCurrentInputStoreNode_id = `LLM_CURRENT_INPUT_STORE_${index}`
+      const llmCurrentInputStoreNode_Code = llmCurrentInputStore(field)
+      const llmCurrentInputStoreNode_xm = []
+      llmCurrentInputStoreNode_xm.push(
+        `${userFeedbackLoopNode['id']}.data.instance`
+      )
+      llmCurrentInputStoreNode = this.codeRunnerNode(
+        llmCurrentInputStoreNode_id,
+        llmCurrentInputStoreNode_Code,
+        llmCurrentInputStoreNode_xm
+      )
+
+      // Edge between USER_FEEDBACK_LOOP_NODE -> CODE_RUNNER_LLM_CURRENT_INPUT_STORE_NODE
+      userFeedback_llmCurrentInputStore_edge = this.createEdge(
+        userFeedbackLoopNode,
+        llmCurrentInputStoreNode
+      )
+
+      // create CODE_RUNNER_LLM_SKIP_NODE
+      const llmSkipNode_id = `LLM_SKIP_${index}`
+      const llmSkipNode_Code = llmSkipCode()
+      const llmSkipNode_xm = []
+      llmSkipNode_xm.push(`${llmCurrentInputStoreNode['id']}.data.instance`)
+      llmSkipNode = this.codeRunnerNode(
+        llmSkipNode_id,
+        llmSkipNode_Code,
+        llmSkipNode_xm
+      )
+
+      // Edge between CODE_RUNNER_LLM_CURRENT_INPUT_STORE_NODE -> CODE_RUNNER_LLM_SKIP_NODE
+      llmCurrentInputStore_llmSkip_edge = this.createEdge(
+        llmCurrentInputStoreNode,
+        llmSkipNode
+      )
+
+      // create LLM_TRANSFORMER_NODE
+      const llmTransformerNode_id = `${index}`
+      const llmTransformerNode_xm = []
+      const questionDescription = field['description']
+      llmTransformerNode_xm.push(`${llmSkipNode['id']}.data.instance`)
+      llmTransformerNode = this.llmTransformerNode(
+        llmTransformerNode_id,
+        llmTransformerNode_xm,
+        questionDescription
+      )
+
+      // Edge between CODE_RUNNER_LLM_SKIP_NODE -> LLM_TRANSFORMER_NODE
+      llmSkip_llmTransformer_edge = this.createEdge(
+        llmSkipNode,
+        llmTransformerNode
+      )
+
+      // create CODE_RUNNER_LLM_VALIDATOR_NODE
+      const llmValidatorNode_id = `LLM_VALIDATOR_${index}`
+      const llmValidatorNode_Code = llmValidatorCode(field)
+      const llmValidatorNode_xm = []
+      llmValidatorNode_xm.push(`${llmTransformerNode['id']}.data.instance`)
+      llmValidatorNode = this.codeRunnerNode(
+        llmValidatorNode_id,
+        llmValidatorNode_Code,
+        llmValidatorNode_xm
+      )
+
+      // Edge between LLM_TRANSFORMER_NODE -> CODE_RUNNER_LLM_VALIDATOR_NODE
+      llmTransformer_llmValidator_edge = this.createEdge(
+        llmTransformerNode,
+        llmValidatorNode
+      )
+    } else {
+      // create CODE_RUNNER_RUN_VALIDATOR_NODE
+      const runValidatorNode_id = `RUN_VALIDATOR_${index}`
+      const runValidatorNode_Code = runValidatorCode(field)
+      const runValidatorNode_xm = []
+      runValidatorNode_xm.push(`${userFeedbackLoopNode['id']}.data.instance`)
+      runValidatorNode = this.codeRunnerNode(
+        runValidatorNode_id,
+        runValidatorNode_Code,
+        runValidatorNode_xm
+      )
+
+      // Edge between USER_FEEDBACK_LOOP_NODE -> CODE_RUNNER_RUN_VALIDATOR_NODE
+      userFeedback_runValidator_edge = this.createEdge(
+        userFeedbackLoopNode,
+        runValidatorNode
+      )
+    }
+
+    // ADD CODE_RUNNER_STORE_NODE
     const storeNode_id = `STORE_${index}`
-    const storeNode_Code = GetInput(field['title'], field['validation'])
+    const storeNode_Code = storeInputCode(field)
     const storeNode_xm = []
-    storeNode_xm.push(`${userFeedbackLoopNode['id']}.data.instance`)
+    if (hasLLmValidation) {
+      storeNode_xm.push(`${llmValidatorNode['id']}.data.instance`)
+      storeNode_xm.push(`${llmSkipNode['id']}.data.instance`)
+    } else {
+      storeNode_xm.push(`${runValidatorNode['id']}.data.instance`)
+    }
     const storeNode = this.codeRunnerNode(
       storeNode_id,
       storeNode_Code,
       storeNode_xm
     )
 
-    // Edge between USER_FEEDBACK_LOOP_NODE -> CODE_RUNNER_STORE_NODE
-    const userFeedback_Store_edge = this.createEdge(
-      userFeedbackLoopNode,
+    // EDGE between CODE_RUNNER_RUN_VALIDATOR_NODE -> CODE_RUNNER_STORE_NODE
+    const runValidator_Store_edge = this.createEdge(
+      hasLLmValidation ? llmValidatorNode : runValidatorNode,
       storeNode
     )
 
+    // ERROR-EDGE between LLM_SKIP_NODE -> STORE_NODE
+    let llmSkip_Store_error_edge
+    if (hasLLmValidation) {
+      llmSkip_Store_error_edge = this.createEdge(llmSkipNode, storeNode, true)
+    }
+
     // create CODE_RUNNER_VALIDATION_NODE
     const validationNode_id = `VALIDATION_${index}`
-    const validationNode_Code = ValidationMsg(field['validation'])
+    const validationNode_Code = ValidationMsg(field)
     const validationNode_xm = []
     validationNode_xm.push(`${storeNode['id']}.data.instance`)
     const validationNode = this.codeRunnerNode(
@@ -287,30 +317,78 @@ export class Flowise {
       userFeedbackLoopNode
     )
 
-    // Push validationNodeId to userFeedbackLoopNode's xMessage
+    // UPDATE: UseFeedbackLoopNode's xMessage : Push validationNodeId to userFeedbackLoopNode's xMessage
     userFeedbackLoopNode['data']['inputs']['xmessage'].push(
       `${validationNode['id']}.data.instance`
     )
 
     // Push all nodes and edges to this.nodes and this.edges sequentially
+
     // push `isVisibleNode`
     this.nodes[isVisibleNode['id']] = isVisibleNode
+
     // push `askNode`
     this.nodes[askNode['id']] = askNode
+
     // push `edge isVisible_Ask_edge`
     this.edges.push(isVisible_Ask_edge)
+
     // push `userFeedbackLoopNode`
     this.nodes[userFeedbackLoopNode['id']] = userFeedbackLoopNode
+
     // push `edge ask_UserFeedback_edge`
     this.edges.push(ask_UserFeedback_edge)
+
+    if (hasLLmValidation) {
+      // push `llmCurrentInputStoreNode`
+      this.nodes[llmCurrentInputStoreNode['id']] = llmCurrentInputStoreNode
+
+      // push `edge userFeedback_llmCurrentInputStore_edge`
+      this.edges.push(userFeedback_llmCurrentInputStore_edge)
+
+      // push `llmSkipNode`
+      this.nodes[llmSkipNode['id']] = llmSkipNode
+
+      // push `edge llmCurrentInputStore_llmSkip_edge`
+      this.edges.push(llmCurrentInputStore_llmSkip_edge)
+
+      // push `llmTransformerNode`
+      this.nodes[llmTransformerNode['id']] = llmTransformerNode
+
+      // push `edge llmSkip_llmTransformer_edge`
+      this.edges.push(llmSkip_llmTransformer_edge)
+
+      // push `llmValidatorNode`
+      this.nodes[llmValidatorNode['id']] = llmValidatorNode
+
+      // push `edge llmTransformer_llmValidator_edge`
+      this.edges.push(llmTransformer_llmValidator_edge)
+    } else {
+      // push `runValidatorNode`
+      this.nodes[runValidatorNode['id']] = runValidatorNode
+
+      // push `edge userFeedback_runValidator_edge`
+      this.edges.push(userFeedback_runValidator_edge)
+    }
+
     // push `storeNode`
     this.nodes[storeNode['id']] = storeNode
-    // push `edge userFeedback_Store_edge`
-    this.edges.push(userFeedback_Store_edge)
+
+    if (hasLLmValidation) {
+      // push `edge llmValidator_Store_edge`
+      this.edges.push(runValidator_Store_edge)
+      // push `edge llmSkip_Store_error_edge`
+      this.edges.push(llmSkip_Store_error_edge)
+    } else {
+      // push `edge runValidator_Store_edge`
+      this.edges.push(runValidator_Store_edge)
+    }
     // push `validationNode`
     this.nodes[validationNode['id']] = validationNode
+
     // push `edge store_Validation_error_edge`
     this.edges.push(store_Validation_error_edge)
+
     // push `edge validation_UserFeedback_edge`
     this.edges.push(validation_UserFeedback_edge)
   }
@@ -463,6 +541,181 @@ export class Flowise {
         y: -141.0959960862705,
       },
       style: {},
+    }
+    return node
+  }
+
+  // LLM TRANSFORMER NODE Creator
+  // Creates a LLM transformer node
+  // @PARAMS:
+  // id: id of the node
+  // xMessage: for data.inputs.xmessage (optional)
+  llmTransformerNode(id, xMessage, description) {
+    const APIKEY = process.env.OPENAI_API
+    const apiKey = APIKEY || 'sk-proj-' // Replace with your actual OpenAI API key
+    const model = 'gpt-4o-mini'
+    // const prompt = `[
+    //   {
+    //     role: 'system',
+    //     content: 'You are an AI assitant helping a user fill in a form. Your job is to analyse the answer given by the user is valid for the question context provided and reiterate and reassure them if they feel uncomfortable or re-explain if they feel confused. You are to always return the response in the form on JSON with two only two keys, error and message, error is a boolean key which is true in case the answer is not relevant to the question and false if the answer is not relevant or is not validated and message is the respone you want to send to them to help them or thank them. Examples: {error: false, message: thanks for your response }; { error: true, message: your response is not relevant to the question }. Always make sure that the response you send back is parseable by JSON.parse() in NodeJS. only return stringified JSON not provide markdown',
+    //   },
+    //   {
+    //     role: 'user',
+    //     content: \`I was prompted to enter the answer to this question: ${description}, this is the answer I submitted: \${root.payload.text}.\`,
+    //   },
+    // ]`
+    const node = {
+      id: `LLM_${id}`,
+      position: { x: 3988.7271438010634, y: -661.3071523540692 },
+      type: 'customNode',
+      data: {
+        label: 'LLM Transformer',
+        category: 'GenericTransformer',
+        name: 'LLM',
+        description: 'A general LLM model based transformer.',
+        baseClasses: ['xMessage'],
+        inputs: {
+          xmessage: xMessage,
+          APIKey: apiKey,
+          model: model,
+          prompt: '',
+          corpusPrompt: '',
+          temperature: '',
+          enableStream: false,
+          outputLanguage: '',
+          outboundURL: '',
+          bhashiniUserId: '',
+          bhashiniAPIKey: '',
+          bhashiniURL: '',
+          provider: '',
+          contextLength: '',
+          languageProvider: '',
+        },
+        outputs: { onSuccess: '', onError: '' },
+        inputAnchors: [
+          {
+            label: 'XMessage',
+            name: 'xmessage',
+            type: 'xMessage',
+            list: true,
+            id: `LLM_${id}-input-xmessage-xMessage`,
+          },
+        ],
+        inputParams: [
+          {
+            label: 'API Key',
+            name: 'APIKey',
+            type: 'string',
+            id: `LLM_${id}-input-APIKey-string`,
+          },
+          {
+            label: 'Model',
+            name: 'model',
+            type: 'string',
+            id: `LLM_${id}-input-model-string`,
+          },
+          {
+            label: 'Prompt',
+            name: 'prompt',
+            type: 'string',
+            id: `LLM_${id}-input-prompt-string`,
+          },
+          {
+            label: 'Corpus Prompt',
+            name: 'corpusPrompt',
+            type: 'string',
+            id: `LLM_${id}-input-corpusPrompt-string`,
+          },
+          {
+            label: 'Temperature',
+            name: 'temperature',
+            type: 'number',
+            id: `LLM_${id}-input-temperature-number`,
+          },
+          {
+            label: 'Enable Stream',
+            name: 'enableStream',
+            type: 'boolean',
+            id: `LLM_${id}-input-enableStream-boolean`,
+          },
+          {
+            label: 'Output Language',
+            name: 'outputLanguage',
+            type: 'string',
+            id: `LLM_${id}-input-outputLanguage-string`,
+          },
+          {
+            label: 'Outbound URL',
+            name: 'outboundURL',
+            type: 'string',
+            id: `LLM_${id}-input-outboundURL-string`,
+          },
+          {
+            label: 'Bhashini User ID',
+            name: 'bhashiniUserId',
+            type: 'string',
+            id: `LLM_${id}-input-bhashiniUserId-string`,
+          },
+          {
+            label: 'Bhashini API Key',
+            name: 'bhashiniAPIKey',
+            type: 'string',
+            id: `LLM_${id}-input-bhashiniAPIKey-string`,
+          },
+          {
+            label: 'Bhashini URL',
+            name: 'bhashiniURL',
+            type: 'string',
+            id: `LLM_${id}-input-bhashiniURL-string`,
+          },
+          {
+            label: 'Provider',
+            name: 'provider',
+            type: 'string',
+            id: `LLM_${id}-input-provider-string`,
+          },
+          {
+            label: 'Context Length',
+            name: 'contextLength',
+            type: 'number',
+            id: `LLM_${id}-input-contextLength-number`,
+          },
+          {
+            label: 'Language Provider',
+            name: 'languageProvider',
+            type: 'string',
+            id: `LLM_${id}-input-languageProvider-string`,
+          },
+          {
+            id: `LLM_${id}-input-sideEffects-json`,
+            label: 'SideEffects',
+            name: 'sideEffects',
+            rows: 2,
+            type: 'json',
+          },
+        ],
+        outputAnchors: [
+          {
+            id: `LLM_${id}-output-onSuccess-xMessage`,
+            name: 'onSuccess',
+            label: 'On Success',
+            type: 'xMessage',
+          },
+          {
+            id: `LLM_${id}-output-onError-xMessage`,
+            name: 'onError',
+            label: 'On Error',
+            type: 'xMessage',
+          },
+        ],
+        id: `LLM_${id}`,
+        selected: false,
+      },
+      width: 300,
+      height: 1690,
+      selected: false,
+      positionAbsolute: { x: 3988.7271438010634, y: -661.3071523540692 },
+      dragging: false,
     }
     return node
   }
