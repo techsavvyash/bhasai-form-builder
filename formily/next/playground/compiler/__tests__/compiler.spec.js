@@ -10,14 +10,6 @@
 //   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 // };
 
-// // Sample test
-// describe('Simple Math Test', () => {
-//   it('should return 9 for 4 + 5', () => {
-//     const sum = 4 + 5;
-//     expect(sum).toBe(9);
-//   });
-// });
-
 // describe('formily_flowise_compiler', () => {
 //   const testCases = [
 //     { input: 'formily_input1.json', output: 'flowise_output1.json' },

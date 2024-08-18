@@ -1,3 +1,10 @@
+/**
+ * This file contains base JSONs for the transformer nodes used.
+ */
+
+/**
+ * JSON for "Start Node"
+ */
 const startNode = {
   id: 'start',
   data: {
@@ -40,6 +47,9 @@ const startNode = {
   style: {},
 }
 
+/**
+ * JSON for a "Code Runner" transformer which says "Thank You!"
+ */
 const endNode = {
   id: 'CODE_RUNNER_END',
   position: {
@@ -115,6 +125,9 @@ const endNode = {
   style: {},
 }
 
+/**
+ * JSON for "LLM Transformer"
+ */
 const llmNode = {
   id: 'LLM',
   position: { x: 3988.7271438010634, y: -661.3071523540692 },

@@ -1,11 +1,7 @@
-// import * as fs from 'fs'
-// import * as fs from 'browserify-fs'
-// import * as path from 'path'
-import { INPUT_FIELD_TYPES } from './fieldTypes'
-import { startNode, endNode } from './start_end'
-import validations from './valid'
-
-// IMPORTING CODES
+/**
+ * Generate Logic Def from Form Def
+ */
+import { startNode, endNode } from './constants/transformers'
 import {
   isVisibleCode,
   AskQuestion,
@@ -15,10 +11,11 @@ import {
   llmValidatorCode,
   storeInputCode,
   ValidationMsg,
-  Select,
-} from './logic/codes'
+} from './logic/snippets'
 
-// FLOWISE CLASS: Manages the flowise Graph
+/**
+ * FLOWISE CLASS: Manages the flowise Graph
+ */
 export class Flowise {
   constructor(parsedformilyFields) {
     this.fields = parsedformilyFields
@@ -30,8 +27,10 @@ export class Flowise {
     this.createGraph()
   }
 
-  // TO JSON FUNCTION:
-  // Returns the required Flowise JSON
+  /**
+   *
+   * @returns the required Flowise JSON
+   */
   toJSON() {
     return {
       nodes: Object.values(this.nodes),
@@ -45,8 +44,9 @@ export class Flowise {
     }
   }
 
-  // CREATE GRAPH FUNCTION :
-  // Creates the graph according to the fields
+  /**
+   * Creates the graph according to the fields
+   */
   createGraph() {
     // Store fields in a variable;
     const fields = this.fields
@@ -124,11 +124,11 @@ export class Flowise {
     this.edges.push(last_Store_end_edge)
   }
 
-  // CREATE FIELD GROUP
-  // Creates a group of nodes and edges for a field according to diagram
-  // @PARAMS:
-  // field: field object
-  // index: index of the field
+  /**
+   * Creates a group of nodes and edges for a field according to diagram
+   * @param {*} field: field object
+   * @param {*} index: index of the field
+   */
   createFieldGroup(field, index) {
     // create CODE_RUNNER_isVISIBLE_NODE
     const isVisibleNode_id = `isVISIBLE_${index}`
@@ -393,11 +393,13 @@ export class Flowise {
     this.edges.push(validation_UserFeedback_edge)
   }
 
-  // CODE RUNNER NODE Creator
-  // @PARAMS:
-  // id: id of the node
-  // code: for data.inputs.code
-  // xMessage: for data.inputs.xmessage
+  /**
+   * Creates a "Code Runner" transformer node
+   * @param {*} id: id of the node
+   * @param {*} code: for data.inputs.code
+   * @param {*} xMessage: for data.inputs.xmessage
+   * @returns
+   */
   codeRunnerNode(id, code, xMessage) {
     const node = {
       id: `CODE_RUNNER_${id}`,
@@ -476,11 +478,12 @@ export class Flowise {
     return node
   }
 
-  // USER FEEDBACK LOOP NODE Creator
-  // Creates a user feedback loop node
-  // @PARAMS:
-  // id: id of the node
-  // xMessage: for data.inputs.xmessage (optional)
+  /**
+   * Creates a "User Feedback Loop" node
+   * @param {*} id: id of the node
+   * @param {*} xMessage: for data.inputs.xmessage (optional)
+   * @returns
+   */
   userFeedbackLoopNode(id, xMessage) {
     const node = {
       id: `USER_FEEDBACK_LOOP_${id}`,
@@ -545,11 +548,13 @@ export class Flowise {
     return node
   }
 
-  // LLM TRANSFORMER NODE Creator
-  // Creates a LLM transformer node
-  // @PARAMS:
-  // id: id of the node
-  // xMessage: for data.inputs.xmessage (optional)
+  /**
+   * Creates a "LLM Transformer" node
+   * @param {*} id: id of the node
+   * @param {*} xMessage: for data.inputs.xmessage
+   * @param {*} description
+   * @returns
+   */
   llmTransformerNode(id, xMessage, description) {
     const APIKEY = process.env.OPENAI_API
     const apiKey = APIKEY || 'sk-proj-' // Replace with your actual OpenAI API key
@@ -720,31 +725,32 @@ export class Flowise {
     return node
   }
 
-  // xMessageConnect:
-  // Connects two nodes using xMessage
-  // @PARAMS:
-  // sourceId: source node Id
-  // targetId: target node Id
+  /**
+   * Connects two nodes using xMessage
+   * @param {*} sourceId: source node Id
+   * @param {*} targetId: target node Id
+   */
   xMessageConnect(sourceId, targetId) {
     // push sourceId's instance to targetId's xMessage
     this.nodes[targetId].data.inputs.xmessage.push(`${sourceId}.data.instance`)
   }
 
-  // EDGE Creator:
-  // Creates an edge between source and target
-  // @PARAMS:
-  // source: source node
-  // target: target node
-  // error: boolean (default false), if true then edge uses sorce's `onError` output anchor
+  /**
+   * Creates an edge between source and target
+   * @param {*} source: source node
+   * @param {*} target: target node
+   * @param {*} error: boolean (default false), if true then edge uses sorce's `onError` output anchor
+   * @returns
+   */
   createEdge(source, target, error = false) {
-    let Source_OutId
+    let sourceOutId
     if (error && source['data']['outputAnchors'].length > 1) {
-      Source_OutId = source['data']['outputAnchors'][1]['id']
+      sourceOutId = source['data']['outputAnchors'][1]['id']
     } else {
       // console.log('source: ', source)
-      Source_OutId = source['data']['outputAnchors'][0]['id']
+      sourceOutId = source['data']['outputAnchors'][0]['id']
     }
-    const Target_InId = target['data']['inputAnchors'][0]['id']
+    const targetInId = target['data']['inputAnchors'][0]['id']
 
     const edgeId = `${source.id}-${target.id}`
 
@@ -756,8 +762,8 @@ export class Flowise {
       type: 'buttonedge',
       source: source.id,
       target: target.id,
-      sourceHandle: Source_OutId,
-      targetHandle: Target_InId,
+      sourceHandle: sourceOutId,
+      targetHandle: targetInId,
     }
     return edge
   }

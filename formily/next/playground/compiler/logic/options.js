@@ -3,5 +3,3 @@ export const INPUT_FIELD_TYPES = {
   SELECT: 'Select',
   TEXTAREA: 'Input.TextArea',
 }
-
-// module.exports = INPUT_FIELD_TYPES
