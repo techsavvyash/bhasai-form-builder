@@ -11,22 +11,22 @@ export const ActionsWidget = observer(() => {
   useEffect(() => {
     loadInitialSchema(designer)
   }, [])
-  const supportLocales = ['zh-cn', 'en-us', 'ko-kr']
+  const supportLocales = ['en-us']
   useEffect(() => {
     if (!supportLocales.includes(GlobalRegistry.getDesignerLanguage())) {
-      GlobalRegistry.setDesignerLanguage('zh-cn')
+      GlobalRegistry.setDesignerLanguage('en-us')
     }
   }, [])
   return (
     <Space style={{ marginRight: 10 }}>
-      <Button href="https://designable-antd.formilyjs.org">Ant Design</Button>
+      {/* <Button href="https://designable-antd.formilyjs.org">Ant Design</Button> */}
       <Radio.Group
         value={GlobalRegistry.getDesignerLanguage()}
         optionType="button"
         options={[
           { label: 'English', value: 'en-us' },
-          { label: '简体中文', value: 'zh-cn' },
-          { label: '한국어', value: 'ko-kr' },
+          // { label: '简体中文', value: 'zh-cn' },
+          // { label: '한국어', value: 'ko-kr' },
         ]}
         onChange={(e) => {
           GlobalRegistry.setDesignerLanguage(e.target.value)
