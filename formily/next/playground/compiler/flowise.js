@@ -151,16 +151,32 @@ export class Flowise {
     // Edge between CODE_RUNNER_isVISIBLE_NODE -> CODE_RUNNER_ASK_NODE
     const isVisible_Ask_edge = this.createEdge(isVisibleNode, askNode)
 
+    // Create LLM_ASK_NODE (humanizing questions)
+    const llmAskNode_id = `LLM_ASK_${index}`
+    const llmAskNodeXm = []
+    llmAskNodeXm.push(`${askNode['id']}.data.instance`)
+    const llmAskNode = this.llmTransformerNode(
+      llmAskNode_id,
+      llmAskNodeXm,
+      field['description']
+    )
+
+    // Edge between CODE_RUNNER_ASK_NODE -> LLM_ASK_NODE
+    const ask_llmAsk_edge = this.createEdge(askNode, llmAskNode)
+
     // create USER_FEEDBACK_LOOP_NODE
     const userFeedbackLoopNode_xm = []
-    userFeedbackLoopNode_xm.push(`${askNode['id']}.data.instance`)
+    userFeedbackLoopNode_xm.push(`${llmAskNode['id']}.data.instance`)
     const userFeedbackLoopNode = this.userFeedbackLoopNode(
       index,
       userFeedbackLoopNode_xm
     )
 
     // Edge between CODE_RUNNER_ASK_NODE -> USER_FEEDBACK_LOOP_NODE
-    const ask_UserFeedback_edge = this.createEdge(askNode, userFeedbackLoopNode)
+    const ask_UserFeedback_edge = this.createEdge(
+      llmAskNode,
+      userFeedbackLoopNode
+    )
 
     // // // DECLARING VARIABLES in COMMON SCOPES // // //
     let llmCurrentInputStoreNode
@@ -332,6 +348,12 @@ export class Flowise {
 
     // push `edge isVisible_Ask_edge`
     this.edges.push(isVisible_Ask_edge)
+
+    // push `llmAskNode`
+    this.nodes[llmAskNode['id']] = llmAskNode
+
+    // push `edge ask_llmAsk_edge`
+    this.edges.push(ask_llmAsk_edge)
 
     // push `userFeedbackLoopNode`
     this.nodes[userFeedbackLoopNode['id']] = userFeedbackLoopNode
@@ -559,16 +581,13 @@ export class Flowise {
     const APIKEY = process.env.OPENAI_API
     const apiKey = APIKEY || 'sk-proj-' // Replace with your actual OpenAI API key
     const model = 'gpt-4o-mini'
-    // const prompt = `[
-    //   {
-    //     role: 'system',
-    //     content: 'You are an AI assitant helping a user fill in a form. Your job is to analyse the answer given by the user is valid for the question context provided and reiterate and reassure them if they feel uncomfortable or re-explain if they feel confused. You are to always return the response in the form on JSON with two only two keys, error and message, error is a boolean key which is true in case the answer is not relevant to the question and false if the answer is not relevant or is not validated and message is the respone you want to send to them to help them or thank them. Examples: {error: false, message: thanks for your response }; { error: true, message: your response is not relevant to the question }. Always make sure that the response you send back is parseable by JSON.parse() in NodeJS. only return stringified JSON not provide markdown',
-    //   },
-    //   {
-    //     role: 'user',
-    //     content: \`I was prompted to enter the answer to this question: ${description}, this is the answer I submitted: \${root.payload.text}.\`,
-    //   },
-    // ]`
+    // let prompt
+    // if(hasPrompt){
+    //   prompt = `You are an AI assistant who is helping a person fill out a conversational form. You are provided with the description of the question you have to ask to the user. Use the description to phrase and frame an empathetic question to be prompted to the user. The Description is ${description}`
+    // }else{
+    //   prompt = ''
+    // }
+
     const node = {
       id: `LLM_${id}`,
       position: { x: 3988.7271438010634, y: -661.3071523540692 },

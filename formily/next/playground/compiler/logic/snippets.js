@@ -31,6 +31,9 @@ export function AskQuestion(fieldDetail) {
   const component = fieldDetail['component']
   let code = MSG_INIT
   code += `msg.payload.text = "${description}";\nmsg.transformer.metaData.currentQuestion="${description}"\n`
+  code += `
+    msg.transformer.metaData.prompt = \`You are an AI assistant who is helping a person fill out a conversational form. You are provided with the description of the question you have to ask to the user. Use the description to phrase and frame an empathetic question to be prompted to the user. The Description is ${description}\`;
+  `
   switch (component) {
     case INPUT_FIELD_TYPES.INPUT:
       break
