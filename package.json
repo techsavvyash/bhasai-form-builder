@@ -150,8 +150,7 @@
   },
   "config": {
     "ghooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "node ./scripts/validate-commit-msg.js"
+      "pre-commit": "lint-staged"
     },
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
