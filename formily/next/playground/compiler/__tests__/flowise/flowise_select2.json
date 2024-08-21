@@ -61,6 +61,12 @@
         ],
         "inputs": {
           "xmessage": [
+            "CODE_RUNNER_isVISIBLE_5.data.instance",
+            "CODE_RUNNER_STORE_5.data.instance",
+            "CODE_RUNNER_isVISIBLE_15.data.instance",
+            "CODE_RUNNER_STORE_15.data.instance",
+            "CODE_RUNNER_isVISIBLE_2.data.instance",
+            "CODE_RUNNER_STORE_2.data.instance",
             "CODE_RUNNER_isVISIBLE_0.data.instance",
             "CODE_RUNNER_STORE_0.data.instance",
             "CODE_RUNNER_isVISIBLE_2.data.instance",
@@ -70,7 +76,7 @@
             "CODE_RUNNER_isVISIBLE_1.data.instance",
             "CODE_RUNNER_STORE_1.data.instance"
           ],
-          "code": "const msg = JSON.parse($0);\nmsg.payload.text = \"Thank You\";\nreturn JSON.stringify(msg);"
+          "code": "const msg = JSON.parse($0);\n\n    msg.payload.text = \"Thank you for completing the registration. Your responses have been recorded. Have a great day!\\n Your recorded answers are: \\n\";\n  \n    const formInput = msg.transformer.metaData.formInput;\n    if(formInput){\n      Object.keys(formInput).forEach((key) => {\n        msg.payload.text += key + \": \" + formInput[key] + \"\\n\";\n      });\n    }\n  return JSON.stringify(msg);"
         },
         "outputs": {
           "onSuccess": "",
@@ -214,7 +220,7 @@
         "type": "Output",
         "label": "Code Runner Transformer",
         "inputs": {
-          "code": "const msg = JSON.parse($0);\nmsg.payload.text = \"Select Your Class\";\nmsg.transformer.metaData.currentQuestion=\"Select Your Class\"\nmsg.payload.buttonChoices ={\"header\":\"Select Your Class\",\"choices\":[{\"key\":\"class-1-key\",\"text\":\"Class 1\",\"isEnabled\":true,\"showTextInput\":true},{\"key\":\"class-2-key\",\"text\":\"Class 2\",\"isEnabled\":true,\"showTextInput\":true}]};\n\n    const currentInput = msg.transformer.metaData.currentInput;\n    if(currentInput){\n      currentInput[\"62q7t4xz4kk\"] = {\n        text: \"\",\n        retries: 0\n      };\n    }\n    else {\n      msg.transformer.metaData.currentInput = {\n        \"62q7t4xz4kk\": {\n          text: \"\",\n          retries: 0\n        }\n      };  \n    }\n  return JSON.stringify(msg);",
+          "code": "const msg = JSON.parse($0);\nmsg.payload.text = \"Select Your Class\";\nmsg.transformer.metaData.currentQuestion=\"Select Your Class\"\n\n    msg.transformer.metaData.prompt = `\n    Given the description of a field for the 10th standard board exam registration form in India, generate a warm, conversational question that is clear and supportive. Ensure the question is concise, friendly, and focused on getting the needed information without extra wording.\n    The Description is Select Your Class`;\n  msg.payload.buttonChoices ={\"header\":\"Select Your Class\",\"choices\":[{\"key\":\"class-1-key\",\"text\":\"Class 1\",\"isEnabled\":true,\"showTextInput\":true},{\"key\":\"class-2-key\",\"text\":\"Class 2\",\"isEnabled\":true,\"showTextInput\":true}]};\n\n    const currentInput = msg.transformer.metaData.currentInput;\n    if(currentInput){\n      currentInput[\"62q7t4xz4kk\"] = {\n        text: \"\",\n        retries: 0\n      };\n    }\n    else {\n      msg.transformer.metaData.currentInput = {\n        \"62q7t4xz4kk\": {\n          text: \"\",\n          retries: 0\n        }\n      };  \n    }\n  return JSON.stringify(msg);",
           "xmessage": [
             "CODE_RUNNER_isVISIBLE_0.data.instance"
           ]
@@ -285,6 +291,172 @@
       "style": {}
     },
     {
+      "id": "LLM_LLM_ASK_0",
+      "position": {
+        "x": 3988.7271438010634,
+        "y": -661.3071523540692
+      },
+      "type": "customNode",
+      "data": {
+        "label": "LLM Transformer",
+        "category": "GenericTransformer",
+        "name": "LLM",
+        "description": "A general LLM model based transformer.",
+        "baseClasses": [
+          "xMessage"
+        ],
+        "inputs": {
+          "xmessage": [
+            "CODE_RUNNER_ASK_0.data.instance"
+          ],
+          "APIKey": "sk-proj-",
+          "model": "gpt-4o-mini",
+          "prompt": "",
+          "corpusPrompt": "",
+          "temperature": "",
+          "enableStream": false,
+          "outputLanguage": "",
+          "outboundURL": "",
+          "bhashiniUserId": "",
+          "bhashiniAPIKey": "",
+          "bhashiniURL": "",
+          "provider": "",
+          "contextLength": "",
+          "languageProvider": ""
+        },
+        "outputs": {
+          "onSuccess": "",
+          "onError": ""
+        },
+        "inputAnchors": [
+          {
+            "label": "XMessage",
+            "name": "xmessage",
+            "type": "xMessage",
+            "list": true,
+            "id": "LLM_LLM_ASK_0-input-xmessage-xMessage"
+          }
+        ],
+        "inputParams": [
+          {
+            "label": "API Key",
+            "name": "APIKey",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-APIKey-string"
+          },
+          {
+            "label": "Model",
+            "name": "model",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-model-string"
+          },
+          {
+            "label": "Prompt",
+            "name": "prompt",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-prompt-string"
+          },
+          {
+            "label": "Corpus Prompt",
+            "name": "corpusPrompt",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-corpusPrompt-string"
+          },
+          {
+            "label": "Temperature",
+            "name": "temperature",
+            "type": "number",
+            "id": "LLM_LLM_ASK_0-input-temperature-number"
+          },
+          {
+            "label": "Enable Stream",
+            "name": "enableStream",
+            "type": "boolean",
+            "id": "LLM_LLM_ASK_0-input-enableStream-boolean"
+          },
+          {
+            "label": "Output Language",
+            "name": "outputLanguage",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-outputLanguage-string"
+          },
+          {
+            "label": "Outbound URL",
+            "name": "outboundURL",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-outboundURL-string"
+          },
+          {
+            "label": "Bhashini User ID",
+            "name": "bhashiniUserId",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-bhashiniUserId-string"
+          },
+          {
+            "label": "Bhashini API Key",
+            "name": "bhashiniAPIKey",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-bhashiniAPIKey-string"
+          },
+          {
+            "label": "Bhashini URL",
+            "name": "bhashiniURL",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-bhashiniURL-string"
+          },
+          {
+            "label": "Provider",
+            "name": "provider",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-provider-string"
+          },
+          {
+            "label": "Context Length",
+            "name": "contextLength",
+            "type": "number",
+            "id": "LLM_LLM_ASK_0-input-contextLength-number"
+          },
+          {
+            "label": "Language Provider",
+            "name": "languageProvider",
+            "type": "string",
+            "id": "LLM_LLM_ASK_0-input-languageProvider-string"
+          },
+          {
+            "id": "LLM_LLM_ASK_0-input-sideEffects-json",
+            "label": "SideEffects",
+            "name": "sideEffects",
+            "rows": 2,
+            "type": "json"
+          }
+        ],
+        "outputAnchors": [
+          {
+            "id": "LLM_LLM_ASK_0-output-onSuccess-xMessage",
+            "name": "onSuccess",
+            "label": "On Success",
+            "type": "xMessage"
+          },
+          {
+            "id": "LLM_LLM_ASK_0-output-onError-xMessage",
+            "name": "onError",
+            "label": "On Error",
+            "type": "xMessage"
+          }
+        ],
+        "id": "LLM_LLM_ASK_0",
+        "selected": false
+      },
+      "width": 300,
+      "height": 1690,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3988.7271438010634,
+        "y": -661.3071523540692
+      },
+      "dragging": false
+    },
+    {
       "id": "USER_FEEDBACK_LOOP_0",
       "data": {
         "id": "USER_FEEDBACK_LOOP_0",
@@ -293,7 +465,7 @@
         "label": "User Feedback Loop",
         "inputs": {
           "xmessage": [
-            "CODE_RUNNER_ASK_0.data.instance",
+            "LLM_LLM_ASK_0.data.instance",
             "CODE_RUNNER_VALIDATION_0.data.instance"
           ]
         },
@@ -669,7 +841,7 @@
         "type": "Output",
         "label": "Code Runner Transformer",
         "inputs": {
-          "code": "const msg = JSON.parse($0);\nmsg.payload.text = \"Select your Favourite Sport\";\nmsg.transformer.metaData.currentQuestion=\"Select your Favourite Sport\"\nmsg.payload.buttonChoices ={\"header\":\"Select your Favourite Sport\",\"choices\":[{\"key\":\"s5ukwcjdl5q\",\"text\":\"Cricket\",\"isEnabled\":true,\"showTextInput\":true},{\"key\":\"lwhu2kl7ska\",\"text\":\"Football\",\"isEnabled\":true,\"showTextInput\":true}]};\n\n    const currentInput = msg.transformer.metaData.currentInput;\n    if(currentInput){\n      currentInput[\"kopukmb7qkz\"] = {\n        text: \"\",\n        retries: 0\n      };\n    }\n    else {\n      msg.transformer.metaData.currentInput = {\n        \"kopukmb7qkz\": {\n          text: \"\",\n          retries: 0\n        }\n      };  \n    }\n  return JSON.stringify(msg);",
+          "code": "const msg = JSON.parse($0);\nmsg.payload.text = \"Select your Favourite Sport\";\nmsg.transformer.metaData.currentQuestion=\"Select your Favourite Sport\"\n\n    msg.transformer.metaData.prompt = `\n    Given the description of a field for the 10th standard board exam registration form in India, generate a warm, conversational question that is clear and supportive. Ensure the question is concise, friendly, and focused on getting the needed information without extra wording.\n    The Description is Select your Favourite Sport`;\n  msg.payload.buttonChoices ={\"header\":\"Select your Favourite Sport\",\"choices\":[{\"key\":\"s5ukwcjdl5q\",\"text\":\"Cricket\",\"isEnabled\":true,\"showTextInput\":true},{\"key\":\"lwhu2kl7ska\",\"text\":\"Football\",\"isEnabled\":true,\"showTextInput\":true}]};\n\n    const currentInput = msg.transformer.metaData.currentInput;\n    if(currentInput){\n      currentInput[\"kopukmb7qkz\"] = {\n        text: \"\",\n        retries: 0\n      };\n    }\n    else {\n      msg.transformer.metaData.currentInput = {\n        \"kopukmb7qkz\": {\n          text: \"\",\n          retries: 0\n        }\n      };  \n    }\n  return JSON.stringify(msg);",
           "xmessage": [
             "CODE_RUNNER_isVISIBLE_1.data.instance"
           ]
@@ -740,6 +912,172 @@
       "style": {}
     },
     {
+      "id": "LLM_LLM_ASK_1",
+      "position": {
+        "x": 3988.7271438010634,
+        "y": -661.3071523540692
+      },
+      "type": "customNode",
+      "data": {
+        "label": "LLM Transformer",
+        "category": "GenericTransformer",
+        "name": "LLM",
+        "description": "A general LLM model based transformer.",
+        "baseClasses": [
+          "xMessage"
+        ],
+        "inputs": {
+          "xmessage": [
+            "CODE_RUNNER_ASK_1.data.instance"
+          ],
+          "APIKey": "sk-proj-",
+          "model": "gpt-4o-mini",
+          "prompt": "",
+          "corpusPrompt": "",
+          "temperature": "",
+          "enableStream": false,
+          "outputLanguage": "",
+          "outboundURL": "",
+          "bhashiniUserId": "",
+          "bhashiniAPIKey": "",
+          "bhashiniURL": "",
+          "provider": "",
+          "contextLength": "",
+          "languageProvider": ""
+        },
+        "outputs": {
+          "onSuccess": "",
+          "onError": ""
+        },
+        "inputAnchors": [
+          {
+            "label": "XMessage",
+            "name": "xmessage",
+            "type": "xMessage",
+            "list": true,
+            "id": "LLM_LLM_ASK_1-input-xmessage-xMessage"
+          }
+        ],
+        "inputParams": [
+          {
+            "label": "API Key",
+            "name": "APIKey",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-APIKey-string"
+          },
+          {
+            "label": "Model",
+            "name": "model",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-model-string"
+          },
+          {
+            "label": "Prompt",
+            "name": "prompt",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-prompt-string"
+          },
+          {
+            "label": "Corpus Prompt",
+            "name": "corpusPrompt",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-corpusPrompt-string"
+          },
+          {
+            "label": "Temperature",
+            "name": "temperature",
+            "type": "number",
+            "id": "LLM_LLM_ASK_1-input-temperature-number"
+          },
+          {
+            "label": "Enable Stream",
+            "name": "enableStream",
+            "type": "boolean",
+            "id": "LLM_LLM_ASK_1-input-enableStream-boolean"
+          },
+          {
+            "label": "Output Language",
+            "name": "outputLanguage",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-outputLanguage-string"
+          },
+          {
+            "label": "Outbound URL",
+            "name": "outboundURL",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-outboundURL-string"
+          },
+          {
+            "label": "Bhashini User ID",
+            "name": "bhashiniUserId",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-bhashiniUserId-string"
+          },
+          {
+            "label": "Bhashini API Key",
+            "name": "bhashiniAPIKey",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-bhashiniAPIKey-string"
+          },
+          {
+            "label": "Bhashini URL",
+            "name": "bhashiniURL",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-bhashiniURL-string"
+          },
+          {
+            "label": "Provider",
+            "name": "provider",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-provider-string"
+          },
+          {
+            "label": "Context Length",
+            "name": "contextLength",
+            "type": "number",
+            "id": "LLM_LLM_ASK_1-input-contextLength-number"
+          },
+          {
+            "label": "Language Provider",
+            "name": "languageProvider",
+            "type": "string",
+            "id": "LLM_LLM_ASK_1-input-languageProvider-string"
+          },
+          {
+            "id": "LLM_LLM_ASK_1-input-sideEffects-json",
+            "label": "SideEffects",
+            "name": "sideEffects",
+            "rows": 2,
+            "type": "json"
+          }
+        ],
+        "outputAnchors": [
+          {
+            "id": "LLM_LLM_ASK_1-output-onSuccess-xMessage",
+            "name": "onSuccess",
+            "label": "On Success",
+            "type": "xMessage"
+          },
+          {
+            "id": "LLM_LLM_ASK_1-output-onError-xMessage",
+            "name": "onError",
+            "label": "On Error",
+            "type": "xMessage"
+          }
+        ],
+        "id": "LLM_LLM_ASK_1",
+        "selected": false
+      },
+      "width": 300,
+      "height": 1690,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3988.7271438010634,
+        "y": -661.3071523540692
+      },
+      "dragging": false
+    },
+    {
       "id": "USER_FEEDBACK_LOOP_1",
       "data": {
         "id": "USER_FEEDBACK_LOOP_1",
@@ -748,7 +1086,7 @@
         "label": "User Feedback Loop",
         "inputs": {
           "xmessage": [
-            "CODE_RUNNER_ASK_1.data.instance",
+            "LLM_LLM_ASK_1.data.instance",
             "CODE_RUNNER_VALIDATION_1.data.instance"
           ]
         },
@@ -1051,14 +1389,25 @@
       "targetHandle": "CODE_RUNNER_ASK_0-input-xmessage-xMessage"
     },
     {
-      "id": "CODE_RUNNER_ASK_0-USER_FEEDBACK_LOOP_0",
+      "id": "CODE_RUNNER_ASK_0-LLM_LLM_ASK_0",
       "data": {
         "label": ""
       },
       "type": "buttonedge",
       "source": "CODE_RUNNER_ASK_0",
-      "target": "USER_FEEDBACK_LOOP_0",
+      "target": "LLM_LLM_ASK_0",
       "sourceHandle": "CODE_RUNNER_ASK_0-output-onSuccess-xMessage",
+      "targetHandle": "LLM_LLM_ASK_0-input-xmessage-xMessage"
+    },
+    {
+      "id": "LLM_LLM_ASK_0-USER_FEEDBACK_LOOP_0",
+      "data": {
+        "label": ""
+      },
+      "type": "buttonedge",
+      "source": "LLM_LLM_ASK_0",
+      "target": "USER_FEEDBACK_LOOP_0",
+      "sourceHandle": "LLM_LLM_ASK_0-output-onSuccess-xMessage",
       "targetHandle": "USER_FEEDBACK_LOOP_0-input-xmessage-xMessage"
     },
     {
@@ -1117,14 +1466,25 @@
       "targetHandle": "CODE_RUNNER_ASK_1-input-xmessage-xMessage"
     },
     {
-      "id": "CODE_RUNNER_ASK_1-USER_FEEDBACK_LOOP_1",
+      "id": "CODE_RUNNER_ASK_1-LLM_LLM_ASK_1",
       "data": {
         "label": ""
       },
       "type": "buttonedge",
       "source": "CODE_RUNNER_ASK_1",
-      "target": "USER_FEEDBACK_LOOP_1",
+      "target": "LLM_LLM_ASK_1",
       "sourceHandle": "CODE_RUNNER_ASK_1-output-onSuccess-xMessage",
+      "targetHandle": "LLM_LLM_ASK_1-input-xmessage-xMessage"
+    },
+    {
+      "id": "LLM_LLM_ASK_1-USER_FEEDBACK_LOOP_1",
+      "data": {
+        "label": ""
+      },
+      "type": "buttonedge",
+      "source": "LLM_LLM_ASK_1",
+      "target": "USER_FEEDBACK_LOOP_1",
+      "sourceHandle": "LLM_LLM_ASK_1-output-onSuccess-xMessage",
       "targetHandle": "USER_FEEDBACK_LOOP_1-input-xmessage-xMessage"
     },
     {
