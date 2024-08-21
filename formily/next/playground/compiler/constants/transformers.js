@@ -2,6 +2,8 @@
  * This file contains base JSONs for the transformer nodes used.
  */
 
+import { EndOfSurvey } from '../logic/snippets'
+
 /**
  * JSON for "Start Node"
  */
@@ -66,7 +68,7 @@ const endNode = {
     baseClasses: ['xMessage'],
     inputs: {
       xmessage: [], // will be filled by other code.
-      code: 'const msg = JSON.parse($0);\nmsg.payload.text = "Thank You";\nreturn JSON.stringify(msg);',
+      code: `${EndOfSurvey()}`,
     },
     outputs: {
       onSuccess: '',
