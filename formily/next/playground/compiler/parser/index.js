@@ -33,13 +33,19 @@ class FieldParsers {
     // const title = fieldDetail['title'].replace(/\s/g, '') // mustn't have spaces
     const display = this.propParser.displayParser(fieldDetail)
     const reactions = this.propParser.reactionsParser(fieldDetail)
+
+    const validationParserResult = this.propParser.validationParser(
+      fieldDetail['x-validator']
+    )
+    const parsedValidationArray = validationParserResult.validationArray
+    const parsedPrompt = validationParserResult.prompt
+
     return {
       title,
       component: 'Input',
       description: fieldDetail['description'] || 'Description not provided',
-      validation: fieldDetail['x-validator']
-        ? this.propParser.validationParser(fieldDetail['x-validator'])
-        : [],
+      validation: fieldDetail['x-validator'] ? parsedValidationArray : [],
+      prompt: fieldDetail['x-validator'] ? parsedPrompt : [],
       display,
       reactions,
       required: fieldDetail['required'] || false,
@@ -62,6 +68,7 @@ class FieldParsers {
         component: 'Select',
         description: fieldDetail['description'] || 'Description not provided',
         validation: [],
+        prompt: [],
         options: [],
         display,
         reactions,
@@ -123,6 +130,7 @@ class FieldParsers {
           component: 'Error',
           description: 'Component not found',
           validation: [],
+          prompt: [],
           display: false,
           required: false,
         }
