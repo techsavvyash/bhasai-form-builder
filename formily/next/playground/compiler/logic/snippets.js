@@ -138,6 +138,8 @@ export function runValidatorCode(fieldDetail) {
 export function llmCurrentInputStore(fieldDetail) {
   const title = fieldDetail['title']
   const description = fieldDetail['description']
+  const promptArray = fieldDetail['prompt']
+
   let code = MSG_INIT
   // create key of validationResults[title] in metaData and initialize it as {}
   code += `
@@ -161,8 +163,9 @@ export function llmCurrentInputStore(fieldDetail) {
   `
 
   // llm prompt
+  let prompt = ''
 
-  code += `
+  prompt = `
     msg.transformer.metaData.prompt = \`
     Given a user response and a question description, your task is to evaluate whether the user’s response correctly addresses the question. If the response is correct, confirm it. If the response is incorrect or incomplete, identify the issue, explain why the response is not sufficient, and provide guidance on how the user can improve their answer. If the user raises concerns or asks questions, address them while reiterating the original question to ensure clarity.
 
@@ -184,6 +187,21 @@ Output:
     \`;
   `
 
+  promptArray.forEach((p) => {
+    if (p != '') {
+      prompt = `
+        msg.transformer.metaData.prompt += \n\`${p}\`;
+        \`User Response: \${msg.payload.text}
+        Give me validation output in this format
+        Output:
+	      •	Example: {“error”: false, “message”: “Thanks for your response.”, “response”: “John Doe”}
+	      •	Example: {“error”: true, “message”: “Your response is not relevant to the question.”, “response”: “”}
+          \`;
+      `
+    }
+  })
+
+  code += prompt
   code += MSG_END
   return code
 }
@@ -207,6 +225,9 @@ export function llmValidatorCode(fieldDetail) {
   code += `
     msg.transformer.metaData.validationResult["${title}"] = {
       llm: JSON.parse(msg.payload.text),
+    }
+    if(!msg.transformer.metaData.validationResult["${title}"].llm.error){
+      msg.transformer.metaData.currentInput["${title}"].text = msg.transformer.metaData.validationResult["${title}"].llm.response;
     }
     ${MSG_END}
   `
@@ -332,6 +353,26 @@ export function ValidationMsg(fieldDetail) {
   `
   code += MSG_END
   // console.log(code);
+  return code
+}
+
+export function EndOfSurvey() {
+  let code = MSG_INIT
+  code += `
+    msg.payload.text = "Thank you for completing the registration. Your responses have been recorded. Have a great day!\\n Your recorded answers are: \\n";
+  `
+  // Showing the inputs taken in survey
+
+  code += `
+    const formInput = msg.transformer.metaData.formInput;
+    if(formInput){
+      Object.keys(formInput).forEach((key) => {
+        msg.payload.text += key + ": " + formInput[key] + "\\n";
+      });
+    }
+  `
+
+  code += MSG_END
   return code
 }
 

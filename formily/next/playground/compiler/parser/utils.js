@@ -48,3 +48,44 @@ export function replaceDepsWithFormInput(input, titles) {
 
   return result
 }
+
+/**
+ * single validation parser
+ * @param {*} validations
+ * @returns An object with two fields: validationArray and prompt(Array)
+ */
+export function singleValidationParser(validations) {
+  const validationArray = []
+  let prompt = []
+  // If validations is a string, push it to the validationArray
+  if (typeof validations === 'string') {
+    validationArray.push(validations)
+    prompt.push('')
+    return {
+      validationArray,
+      prompt,
+    }
+  }
+  // If validations is an object, parsh the object and push it to the validationArray
+  if (
+    !Array.isArray(validations) &&
+    typeof validations === 'object' &&
+    validations !== null
+  ) {
+    // Get the validation
+    if (validations.name) {
+      validationArray.push(validations.name)
+    }
+    // Get the prompt
+    if (validations.properties && validations.properties.prompt) {
+      prompt.push(validations.properties.prompt)
+    } else {
+      prompt.push('')
+    }
+    // Return the validationArray and prompt
+    return {
+      validationArray,
+      prompt,
+    }
+  }
+}

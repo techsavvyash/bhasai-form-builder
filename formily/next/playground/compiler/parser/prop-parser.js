@@ -2,6 +2,7 @@ import {
   extractInnerString,
   getTitleFromDependency,
   replaceDepsWithFormInput,
+  singleValidationParser,
 } from './utils'
 
 export class PropParser {
@@ -45,14 +46,30 @@ export class PropParser {
   /**
    * Parses the 'x-validator' field in the JSON schema
    * @param {*} validations
-   * @returns An array of validation functions
+   * @returns An object with two fields: validationArray and prompt(Array)
    */
   validationParser(validations) {
     const validationArray = []
-    if (typeof validations === 'string') {
-      validationArray.push(validations)
-      return validationArray
+    const prompt = []
+    // If validations is an array, parse elements of the array and push them to the validationArray
+    if (Array.isArray(validations)) {
+      if (validations.length === 0)
+        return {
+          validationArray,
+          prompt,
+        }
+      validations.forEach((validation) => {
+        validationArray.push(
+          singleValidationParser(validation).validationArray[0]
+        )
+        prompt.push(singleValidationParser(validation).prompt[0])
+      })
+      return {
+        validationArray,
+        prompt,
+      }
     }
-    return validations.length != 0 ? validations : validationArray
+    // If not Array (then it must be a single string or a single object)
+    return singleValidationParser(validations)
   }
 }
