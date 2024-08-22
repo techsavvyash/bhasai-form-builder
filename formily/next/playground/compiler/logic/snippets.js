@@ -381,7 +381,8 @@ export function EndOfSurvey() {
 export function Select(fieldDetail) {
   const buttonChoices = 'msg.payload.buttonChoices ='
   const optionsJSON = JSON.stringify({
-    header: fieldDetail['description'],
+    // header: fieldDetail['description'],
+    header: '',
     choices: fieldDetail['options'],
   })
   const options = `${optionsJSON};\n`
