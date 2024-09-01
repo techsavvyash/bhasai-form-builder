@@ -11,6 +11,7 @@ import {
   llmValidatorCode,
   storeInputCode,
   ValidationMsg,
+  EndOfSurvey,
 } from './logic/snippets'
 
 /**
@@ -22,7 +23,7 @@ export class Flowise {
     this.edges = []
     this.nodes = {
       start: startNode,
-      end: endNode,
+      // end: endNode,
     }
     this.width = 300
     this.x_cord = 409.5560193025037
@@ -59,6 +60,13 @@ export class Flowise {
       // create Field Group
       this.createFieldGroup(field, index)
     })
+    // END Node
+    const endId = 'END'
+    const endCode = EndOfSurvey()
+    this.x_cord = this.x_cord + this.width + 100
+    const endNode = this.codeRunnerNode(endId, endCode, [], this.x_cord)
+    // push endNode
+    this.nodes['end'] = endNode
 
     // Create The External Edges for each group
     // Connect each group to the next group
