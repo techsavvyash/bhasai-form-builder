@@ -24,6 +24,9 @@ export class Flowise {
       start: startNode,
       end: endNode,
     }
+    this.width = 300
+    this.x_cord = 409.5560193025037
+    this.y_cord = 25.92199759211908
     this.createGraph()
   }
 
@@ -133,10 +136,12 @@ export class Flowise {
     // create CODE_RUNNER_isVISIBLE_NODE
     const isVisibleNode_id = `isVISIBLE_${index}`
     const isVisibleNode_Code = isVisibleCode(field)
+    this.x_cord = this.x_cord + this.width + 100
     const isVisibleNode = this.codeRunnerNode(
       isVisibleNode_id,
       isVisibleNode_Code,
-      []
+      [],
+      this.x_cord
     )
     const validationTypes = field['validation'] // array of validation types
     const hasLLmValidation = validationTypes.includes('llm') // boolean
@@ -146,7 +151,13 @@ export class Flowise {
     const askNode_Code = AskQuestion(field)
     const askNode_xm = []
     askNode_xm.push(`${isVisibleNode['id']}.data.instance`)
-    const askNode = this.codeRunnerNode(askNode_id, askNode_Code, askNode_xm)
+    this.x_cord = this.x_cord + this.width + 100
+    const askNode = this.codeRunnerNode(
+      askNode_id,
+      askNode_Code,
+      askNode_xm,
+      this.x_cord
+    )
 
     // Edge between CODE_RUNNER_isVISIBLE_NODE -> CODE_RUNNER_ASK_NODE
     const isVisible_Ask_edge = this.createEdge(isVisibleNode, askNode)
@@ -155,10 +166,12 @@ export class Flowise {
     const llmAskNode_id = `LLM_ASK_${index}`
     const llmAskNodeXm = []
     llmAskNodeXm.push(`${askNode['id']}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
     const llmAskNode = this.llmTransformerNode(
       llmAskNode_id,
       llmAskNodeXm,
-      field['description']
+      field['description'],
+      this.x_cord
     )
 
     // Edge between CODE_RUNNER_ASK_NODE -> LLM_ASK_NODE
@@ -167,9 +180,11 @@ export class Flowise {
     // create USER_FEEDBACK_LOOP_NODE
     const userFeedbackLoopNode_xm = []
     userFeedbackLoopNode_xm.push(`${llmAskNode['id']}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
     const userFeedbackLoopNode = this.userFeedbackLoopNode(
       index,
-      userFeedbackLoopNode_xm
+      userFeedbackLoopNode_xm,
+      this.x_cord
     )
 
     // Edge between CODE_RUNNER_ASK_NODE -> USER_FEEDBACK_LOOP_NODE
@@ -200,10 +215,12 @@ export class Flowise {
       llmCurrentInputStoreNode_xm.push(
         `${userFeedbackLoopNode['id']}.data.instance`
       )
+      this.x_cord = this.x_cord + this.width + 100
       llmCurrentInputStoreNode = this.codeRunnerNode(
         llmCurrentInputStoreNode_id,
         llmCurrentInputStoreNode_Code,
-        llmCurrentInputStoreNode_xm
+        llmCurrentInputStoreNode_xm,
+        this.x_cord
       )
 
       // Edge between USER_FEEDBACK_LOOP_NODE -> CODE_RUNNER_LLM_CURRENT_INPUT_STORE_NODE
@@ -217,10 +234,12 @@ export class Flowise {
       const llmSkipNode_Code = llmSkipCode()
       const llmSkipNode_xm = []
       llmSkipNode_xm.push(`${llmCurrentInputStoreNode['id']}.data.instance`)
+      this.x_cord = this.x_cord + this.width + 100
       llmSkipNode = this.codeRunnerNode(
         llmSkipNode_id,
         llmSkipNode_Code,
-        llmSkipNode_xm
+        llmSkipNode_xm,
+        this.x_cord
       )
 
       // Edge between CODE_RUNNER_LLM_CURRENT_INPUT_STORE_NODE -> CODE_RUNNER_LLM_SKIP_NODE
@@ -234,10 +253,12 @@ export class Flowise {
       const llmTransformerNode_xm = []
       const questionDescription = field['description']
       llmTransformerNode_xm.push(`${llmSkipNode['id']}.data.instance`)
+      this.x_cord = this.x_cord + this.width + 100
       llmTransformerNode = this.llmTransformerNode(
         llmTransformerNode_id,
         llmTransformerNode_xm,
-        questionDescription
+        questionDescription,
+        this.x_cord
       )
 
       // Edge between CODE_RUNNER_LLM_SKIP_NODE -> LLM_TRANSFORMER_NODE
@@ -251,10 +272,12 @@ export class Flowise {
       const llmValidatorNode_Code = llmValidatorCode(field)
       const llmValidatorNode_xm = []
       llmValidatorNode_xm.push(`${llmTransformerNode['id']}.data.instance`)
+      this.x_cord = this.x_cord + this.width + 100
       llmValidatorNode = this.codeRunnerNode(
         llmValidatorNode_id,
         llmValidatorNode_Code,
-        llmValidatorNode_xm
+        llmValidatorNode_xm,
+        this.x_cord
       )
 
       // Edge between LLM_TRANSFORMER_NODE -> CODE_RUNNER_LLM_VALIDATOR_NODE
@@ -268,10 +291,12 @@ export class Flowise {
       const runValidatorNode_Code = runValidatorCode(field)
       const runValidatorNode_xm = []
       runValidatorNode_xm.push(`${userFeedbackLoopNode['id']}.data.instance`)
+      this.x_cord = this.x_cord + this.width + 100
       runValidatorNode = this.codeRunnerNode(
         runValidatorNode_id,
         runValidatorNode_Code,
-        runValidatorNode_xm
+        runValidatorNode_xm,
+        this.x_cord
       )
 
       // Edge between USER_FEEDBACK_LOOP_NODE -> CODE_RUNNER_RUN_VALIDATOR_NODE
@@ -291,10 +316,12 @@ export class Flowise {
     } else {
       storeNode_xm.push(`${runValidatorNode['id']}.data.instance`)
     }
+    this.x_cord = this.x_cord + this.width + 100
     const storeNode = this.codeRunnerNode(
       storeNode_id,
       storeNode_Code,
-      storeNode_xm
+      storeNode_xm,
+      this.x_cord
     )
 
     // EDGE between CODE_RUNNER_RUN_VALIDATOR_NODE -> CODE_RUNNER_STORE_NODE
@@ -314,10 +341,12 @@ export class Flowise {
     const validationNode_Code = ValidationMsg(field)
     const validationNode_xm = []
     validationNode_xm.push(`${storeNode['id']}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
     const validationNode = this.codeRunnerNode(
       validationNode_id,
       validationNode_Code,
-      validationNode_xm
+      validationNode_xm,
+      this.x_cord
     )
 
     // ERROR-Edge between CODE_RUNNER_STORE_NODE -> CODE_RUNNER_VALIDATION_NODE
@@ -422,7 +451,13 @@ export class Flowise {
    * @param {*} xMessage: for data.inputs.xmessage
    * @returns
    */
-  codeRunnerNode(id, code, xMessage) {
+  codeRunnerNode(
+    id,
+    code,
+    xMessage,
+    x = 3255.789032183661,
+    y = -141.0959960862705
+  ) {
     const node = {
       id: `CODE_RUNNER_${id}`,
       data: {
@@ -487,13 +522,13 @@ export class Flowise {
       height: 569,
       dragging: false,
       position: {
-        x: 3255.789032183661,
-        y: -141.0959960862705,
+        x: x,
+        y: y,
       },
       selected: false,
       positionAbsolute: {
-        x: 3255.789032183661,
-        y: -141.0959960862705,
+        x: x,
+        y: y,
       },
       style: {},
     }
@@ -506,7 +541,12 @@ export class Flowise {
    * @param {*} xMessage: for data.inputs.xmessage (optional)
    * @returns
    */
-  userFeedbackLoopNode(id, xMessage) {
+  userFeedbackLoopNode(
+    id,
+    xMessage,
+    x = 3255.789032183661,
+    y = -141.0959960862705
+  ) {
     const node = {
       id: `USER_FEEDBACK_LOOP_${id}`,
       data: {
@@ -557,13 +597,13 @@ export class Flowise {
       height: 569,
       dragging: false,
       position: {
-        x: 3255.789032183661,
-        y: -141.0959960862705,
+        x: x,
+        y: y,
       },
       selected: false,
       positionAbsolute: {
-        x: 3255.789032183661,
-        y: -141.0959960862705,
+        x: x,
+        y: y,
       },
       style: {},
     }
@@ -577,20 +617,20 @@ export class Flowise {
    * @param {*} description
    * @returns
    */
-  llmTransformerNode(id, xMessage, description) {
+  llmTransformerNode(
+    id,
+    xMessage,
+    description,
+    x = 3988.7271438010634,
+    y = -661.3071523540692
+  ) {
     const APIKEY = process.env.OPENAI_API
     const apiKey = APIKEY || 'sk-proj-' // Replace with your actual OpenAI API key
     const model = 'gpt-4o-mini'
-    // let prompt
-    // if(hasPrompt){
-    //   prompt = `You are an AI assistant who is helping a person fill out a conversational form. You are provided with the description of the question you have to ask to the user. Use the description to phrase and frame an empathetic question to be prompted to the user. The Description is ${description}`
-    // }else{
-    //   prompt = ''
-    // }
 
     const node = {
       id: `LLM_${id}`,
-      position: { x: 3988.7271438010634, y: -661.3071523540692 },
+      position: { x: x, y: y },
       type: 'customNode',
       data: {
         label: 'LLM Transformer',
@@ -738,7 +778,7 @@ export class Flowise {
       width: 300,
       height: 1690,
       selected: false,
-      positionAbsolute: { x: 3988.7271438010634, y: -661.3071523540692 },
+      positionAbsolute: { x: x, y: y },
       dragging: false,
     }
     return node
