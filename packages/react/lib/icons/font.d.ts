@@ -1,0 +1,16 @@
+import React from 'react';
+export declare const FontWeight: React.JSX.Element;
+export declare const FontStyle: React.JSX.Element;
+export declare const NormalFontStyle: React.JSX.Element;
+export declare const ItalicFontStyle: React.JSX.Element;
+export declare const FontColor: React.JSX.Element;
+export declare const FontSize: React.JSX.Element;
+export declare const LineHeight: React.JSX.Element;
+export declare const TextDecoration: React.JSX.Element;
+export declare const TextUnderline: React.JSX.Element;
+export declare const TextLineThrough: React.JSX.Element;
+export declare const TextAlign: React.JSX.Element;
+export declare const TextAlignLeft: React.JSX.Element;
+export declare const TextAlignCenter: React.JSX.Element;
+export declare const TextAlignRight: React.JSX.Element;
+export declare const TextAlignJustify: React.JSX.Element;
