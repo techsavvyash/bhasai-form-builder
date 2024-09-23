@@ -578,7 +578,7 @@ export class Flowise {
    * @returns
    */
   llmTransformerNode(id, xMessage, description) {
-    const APIKEY = process.env.OPENAI_API
+    const APIKEY = process.env.VITE_OPENAI_API
     const apiKey = APIKEY || 'sk-proj-' // Replace with your actual OpenAI API key
     const model = 'gpt-4o-mini'
     // let prompt

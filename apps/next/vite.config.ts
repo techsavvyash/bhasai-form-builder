@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import dotenv from 'dotenv';
 import MonacoEditorPlugin from 'vite-plugin-monaco-editor'
 import { createStyleImportPlugin, AntdResolve } from 'vite-plugin-style-import'
 
@@ -33,6 +34,9 @@ export default defineConfig({
       resolves: [AntdResolve()],
     }),
   ],
+  define: {
+    'process.env': dotenv.config().parsed,
+  },
   root: 'playground',
   resolve: {
     alias: {
