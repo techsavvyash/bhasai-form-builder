@@ -1,7 +1,7 @@
 /**
  * Generate Logic Def from Form Def
  */
-import { startNode, endNode } from './constants/transformers'
+import { startNode } from './constants/transformers'
 import {
   isVisibleCode,
   AskQuestion,
@@ -13,17 +13,17 @@ import {
   ValidationMsg,
   EndOfSurvey,
 } from './logic/snippets'
+import { createAllQuestionsKeys } from './helper'
 
 /**
  * FLOWISE CLASS: Manages the flowise Graph
  */
 export class Flowise {
   constructor(parsedformilyFields) {
-    this.fields = parsedformilyFields
+    this.fields = parsedformilyFields    
     this.edges = []
     this.nodes = {
       start: startNode,
-      // end: endNode,
     }
     this.width = 300
     this.x_cord = 409.5560193025037
@@ -54,7 +54,31 @@ export class Flowise {
   createGraph() {
     // Store fields in a variable;
     const fields = this.fields
+    
+    // ADD a new key all fields to the root using FIELD SETTER
+    const questionKeys = createAllQuestionsKeys(fields)
+    const fieldsJSON = {
+      "transformer.metaData": {
+        "fields": questionKeys
+      }
+    }
+    
+    const allFields_fieldSetterNode = this.fieldSetterNode({
+      id: 'All_Fields',
+      xMessage: ['start.data.instance'],
+      settersJSON: fieldsJSON,
+      x: ()=>{
+        this.x_cord = this.x_cord + this.width + 100;
+        return this.x_cord;
+      },
+      y: this.y_cord
+    })
 
+    const allFields_start_edge = this.createEdge(this.nodes['start'], allFields_fieldSetterNode)
+
+    this.nodes['allFields'] = allFields_fieldSetterNode
+    this.edges.push(allFields_start_edge);
+    
     // Foreach field, create the group of nodes and edges
     fields.forEach((field, index) => {
       // create Field Group
@@ -74,14 +98,14 @@ export class Flowise {
     for (let index = 0; index < numberOfFields; index++) {
       // Edge: prev-CODE_RUNNER_STORE_NODE / START (if index == 0) -> curr-CODE_RUNNER_isVISIBLE_NODE
       if (index == 0) {
-        // Edge: START -> curr-CODE_RUNNER_isVISIBLE_NODE
-        const start_isVisible_edge = this.createEdge(
-          this.nodes['start'],
+        // Edge: allFields_FieldSetterNode -> curr-CODE_RUNNER_isVISIBLE_NODE
+        const allFields_isVisible_edge = this.createEdge(
+          this.nodes['allFields'],
           this.nodes[`CODE_RUNNER_isVISIBLE_${index}`]
         )
-        this.edges.push(start_isVisible_edge)
+        this.edges.push(allFields_isVisible_edge)
         // Update xMessage of curr-CODE_RUNNER_isVISIBLE_NODE
-        this.xMessageConnect(`start`, `CODE_RUNNER_isVISIBLE_${index}`)
+        this.xMessageConnect(this.nodes['allFields'].id, `CODE_RUNNER_isVISIBLE_${index}`)
       } else {
         // Edge: prev-CODE_RUNNER_STORE_NODE -> curr-CODE_RUNNER_isVISIBLE_NODE
         const prev_isVisible_edge = this.createEdge(
@@ -623,7 +647,7 @@ export class Flowise {
    * @param {*} id: id of the node
    * @param {*} xMessage: for data.inputs.xmessage
    * @param {*} description
-   * @returns
+   * @returns node
    */
   llmTransformerNode(
     id,
@@ -792,6 +816,17 @@ export class Flowise {
     return node
   }
 
+  /**
+   * Creates a "fieldSetterTransformer" node
+   * @param {*} {
+   *  id: id of the node
+   *  settersJSON: a JSON containing some code
+   *  xMessage: for data.inputs.xmessage
+   *  x,
+   *  y
+   * }
+   * @returns node
+   */
   fieldSetterNode({
     id,
     settersJSON = {},
@@ -878,6 +913,107 @@ export class Flowise {
       style: {},
     };
   
+    return node;
+  }
+
+  /**
+   * Creates a "fieldStateTransformer" node
+   * @param {*} {
+   *  id: id of the node,
+   *  xMessage: for data.inputs.xmessage,
+   *  outputStates: string[],
+   *  target: '',
+   *  x,
+   *  y
+   * }
+   * @returns node
+   */
+  fieldStateNode({
+    id,
+    xMessage,
+    outputStates,
+    target = "",
+    x = 11040.765023120011,
+    y = -1091.2266532079288,
+  }) {
+    const outputAnchors = outputStates.map((outputState) => ({
+      // id: `FIELD_STATE_${id}-output-${outputState}-xMessage`,
+      id: `switch-output-${outputState}-xMessage`,
+      name: outputState,
+      label: outputState,
+      type: "xMessage",
+    }));
+  
+    const node = {
+      id: `FIELD_STATE_${id}`,
+      position: {
+        x: x,
+        y: y,
+      },
+      type: "customNode",
+      data: {
+        label: "Field State",
+        name: "FIELD_STATE",
+        type: "Output",
+        category: "SwitchCaseTransformer",
+        description:
+          "A transformer that outputs the value of a field as its state, provided the field is defined",
+        baseClasses: ["xMessage"],
+        inputs: {
+          xmessage: xMessage,
+          target: target,
+        },
+        outputs: {
+          default: "",
+        },
+        outputType: "dynamic",
+        inputAnchors: [
+          {
+            label: "XMessage",
+            name: "xmessage",
+            type: "xMessage",
+            list: true,
+            id: `FIELD_STATE_${id}-input-xmessage-xMessage`,
+          },
+        ],
+        inputParams: [
+          {
+            label: "Target Field",
+            name: "target",
+            type: "string",
+            optional: true,
+            rows: 0,
+            id: `FIELD_STATE_${id}-input-target-string`,
+          },
+          {
+            id: `FIELD_STATE_${id}-input-sideEffects-json`,
+            label: "SideEffects",
+            name: "sideEffects",
+            rows: 2,
+            type: "json",
+          },
+        ],
+        outputAnchors: [
+          {
+            id: `FIELD_STATE_${id}-output-default-xMessage`,
+            name: "default",
+            label: "Default",
+            type: "xMessage",
+          },
+          ...outputAnchors,
+        ],
+        id: `FIELD_STATE_${id}`,
+        selected: true,
+      },
+      width: 300,
+      height: 437,
+      selected: true,
+      positionAbsolute: {
+        x: x,
+        y: y,
+      },
+      dragging: false,
+    };
     return node;
   }
 
