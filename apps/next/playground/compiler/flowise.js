@@ -744,6 +744,95 @@ export class Flowise {
     return node
   }
 
+  fieldSetterNode({
+    id,
+    settersJSON = {},
+    xMessage = [],
+    x = 10730.46410269685,
+    y = -2385.326500845219,
+  }){
+    const setters = JSON.stringify(settersJSON);
+    const node = {
+      id: `FIELD_SETTER_${id}`,
+      data: {
+        id: `FIELD_SETTER_${id}`,
+        name: "FIELD_SETTER",
+        type: "Output",
+        label: "Field Setter Transformer",
+        inputs: {
+          setters: setters,
+          xmessage: xMessage,
+        },
+        outputs: {
+          onError: "",
+          onSuccess: "",
+        },
+        category: "GenericTransformer",
+        selected: false,
+        outputType: "static",
+        baseClasses: ["xMessage"],
+        description:
+          "A field setter that can set XMessage fields from user history or current XMessage.",
+        inputParams: [
+          {
+            id: `FIELD_SETTER_${id}-input-setters-json`,
+            name: "setters",
+            rows: 0,
+            type: "json",
+            label: "Setters",
+            optional: false,
+          },
+          {
+            id: `FIELD_SETTER_${id}-input-sideEffects-json`,
+            name: "sideEffects",
+            rows: 2,
+            type: "json",
+            label: "SideEffects",
+          },
+        ],
+        inputAnchors: [
+          {
+            id: `FIELD_SETTER_${id}-input-xmessage-xMessage`,
+            list: true,
+            name: "xmessage",
+            type: "xMessage",
+            label: "XMessage",
+          },
+        ],
+        outputAnchors: [
+          {
+            id: `FIELD_SETTER_${id}-output-onSuccess-xMessage`,
+            name: "onSuccess",
+            type: "xMessage",
+            label: "On Success",
+          },
+          {
+            id: `FIELD_SETTER_${id}-output-onError-xMessage`,
+            name: "onError",
+            type: "xMessage",
+            label: "On Error",
+          },
+        ],
+      },
+      type: "customNode",
+      width: 300,
+      height: 481,
+      dragging: false,
+      position: {
+        x: x,
+        y: y,
+      },
+      selected: false,
+      positionAbsolute: {
+        x: x,
+        y: y,
+      },
+      style: {},
+    };
+  
+    return node;
+  }
+
   /**
    * Connects two nodes using xMessage
    * @param {*} sourceId: source node Id
