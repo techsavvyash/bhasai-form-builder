@@ -223,8 +223,21 @@ export function llmValidatorCode(fieldDetail) {
   const title = fieldDetail['title']
   let code = MSG_INIT
   code += `
+    const llmResponse = msg.payload.text;
+    let markdown = '';
+    if(llmResponse.startsWith('\`\`\`json')){
+      markdown = llmResponse;
+    }
+    if(markdown){
+      llmResponse = markdown.match(/json([\\s\\S]*?)/)[1].trim();
+    }
+
+    const jsonObject = JSON.parse(llmResponse);
+    Object.keys(jsonObject).forEach((key) => {
+      jsonObject[key.toLowerCase()] = jsonObject[key];
+    });
     msg.transformer.metaData.validationResult["${title}"] = {
-      llm: JSON.parse(msg.payload.text),
+      llm: jsonObject,
     }
     if(!msg.transformer.metaData.validationResult["${title}"].llm.error){
       msg.transformer.metaData.currentInput["${title}"].text = msg.transformer.metaData.validationResult["${title}"].llm.response;
