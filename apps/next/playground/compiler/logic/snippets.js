@@ -71,6 +71,20 @@ export function AskQuestion(fieldDetail) {
   return code
 }
 
+// New: IS NORMAL CODE TEXT
+export function isNormalCode(){
+  let code = '';
+  code += MSG_INIT;
+  code = `
+    const input = msg.payload.text.trim();
+    const copyInput = input.toLowerCase();
+    if(copyInput.startsWith('/back')){
+      throw new Error('Back');
+    }
+  `
+  code += MSG_END;
+}
+
 // RUN VALIDATOR CODE TEXT
 export function runValidatorCode(fieldDetail) {
   const validationTypes = fieldDetail['validation'] // array of validation types

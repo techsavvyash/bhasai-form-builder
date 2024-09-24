@@ -12,6 +12,7 @@ import {
   storeInputCode,
   ValidationMsg,
   EndOfSurvey,
+  isNormalCode,
 } from './logic/snippets'
 import { createAllQuestionsKeys } from './helper'
 
@@ -78,6 +79,8 @@ export class Flowise {
 
     this.nodes['allFields'] = allFields_fieldSetterNode
     this.edges.push(allFields_start_edge);
+
+    // // SINGLE NODES // EDGES and xMessages will be connected while creating the groups
     
     // Foreach field, create the group of nodes and edges
     fields.forEach((field, index) => {
@@ -225,9 +228,30 @@ export class Flowise {
       userFeedbackLoopNode
     )
 
+    // NEW: Check if to go with Normal Flow or Back Traversal
+    // CODE RUNNER (checkFlow)
+    this.x_cord = this.x_cord + this.width + 100
+    checkFlowXm = []
+    checkFlowXm.push(`${userFeedbackLoopNode['id']}.data.instance`)
+    const checkFlowNode = this.codeRunnerNode(
+      `checkFlow_${index}`,
+      isNormalCode(),
+      checkFlowXm,
+      this.x_cord,
+      this.y_cord
+    )
+    this.nodes['checkFlow'] = checkFlowNode
+    // Create Edge between USER_FEEDBACK_LOOP_NODE -> CODE_RUNNER_CHECKFLOW_NODE
+    const userFeedback_checkFlow_edge = this.createEdge(
+      userFeedbackLoopNode,
+      checkFlowNode
+    )
+
+    
+
     // // // DECLARING VARIABLES in COMMON SCOPES // // //
     let llmCurrentInputStoreNode
-    let userFeedback_llmCurrentInputStore_edge
+    let checkFlow_llmCurrentInputStore_edge
     let llmSkipNode
     let llmCurrentInputStore_llmSkip_edge
     let llmTransformerNode
@@ -236,7 +260,7 @@ export class Flowise {
     let llmTransformer_llmValidator_edge
 
     let runValidatorNode
-    let userFeedback_runValidator_edge
+    let checkFlow_runValidator_edge
 
     // if(there is llm validation) ->  llmCurrentInputStore -> llmTransformer -> llmValidator -> storeInput -> validationMsg
     if (hasLLmValidation) {
@@ -245,7 +269,7 @@ export class Flowise {
       const llmCurrentInputStoreNode_Code = llmCurrentInputStore(field)
       const llmCurrentInputStoreNode_xm = []
       llmCurrentInputStoreNode_xm.push(
-        `${userFeedbackLoopNode['id']}.data.instance`
+        `${checkFlowNode['id']}.data.instance`
       )
       this.x_cord = this.x_cord + this.width + 100
       llmCurrentInputStoreNode = this.codeRunnerNode(
@@ -255,9 +279,9 @@ export class Flowise {
         this.x_cord
       )
 
-      // Edge between USER_FEEDBACK_LOOP_NODE -> CODE_RUNNER_LLM_CURRENT_INPUT_STORE_NODE
-      userFeedback_llmCurrentInputStore_edge = this.createEdge(
-        userFeedbackLoopNode,
+      // Edge between CHECK_FLOW_NODE -> CODE_RUNNER_LLM_CURRENT_INPUT_STORE_NODE
+      checkFlow_llmCurrentInputStore_edge = this.createEdge(
+        checkFlowNode,
         llmCurrentInputStoreNode
       )
 
@@ -322,7 +346,7 @@ export class Flowise {
       const runValidatorNode_id = `RUN_VALIDATOR_${index}`
       const runValidatorNode_Code = runValidatorCode(field)
       const runValidatorNode_xm = []
-      runValidatorNode_xm.push(`${userFeedbackLoopNode['id']}.data.instance`)
+      runValidatorNode_xm.push(`${checkFlowNode['id']}.data.instance`)
       this.x_cord = this.x_cord + this.width + 100
       runValidatorNode = this.codeRunnerNode(
         runValidatorNode_id,
@@ -331,9 +355,9 @@ export class Flowise {
         this.x_cord
       )
 
-      // Edge between USER_FEEDBACK_LOOP_NODE -> CODE_RUNNER_RUN_VALIDATOR_NODE
-      userFeedback_runValidator_edge = this.createEdge(
-        userFeedbackLoopNode,
+      // Edge between CHECK_FLOW_NODE -> CODE_RUNNER_RUN_VALIDATOR_NODE
+      checkFlow_runValidator_edge = this.createEdge(
+        checkFlowNode,
         runValidatorNode
       )
     }
@@ -422,12 +446,18 @@ export class Flowise {
     // push `edge ask_UserFeedback_edge`
     this.edges.push(ask_UserFeedback_edge)
 
+    // push `checkFlowNode`
+    this.nodes[checkFlowNode['id']] = checkFlowNode
+
+    // push `userFeedback_checkFlow_edge`
+    this.edges.push(userFeedback_checkFlow_edge)
+
     if (hasLLmValidation) {
       // push `llmCurrentInputStoreNode`
       this.nodes[llmCurrentInputStoreNode['id']] = llmCurrentInputStoreNode
 
-      // push `edge userFeedback_llmCurrentInputStore_edge`
-      this.edges.push(userFeedback_llmCurrentInputStore_edge)
+      // push `edge checkFlow_llmCurrentInputStore_edge`
+      this.edges.push(checkFlow_llmCurrentInputStore_edge)
 
       // push `llmSkipNode`
       this.nodes[llmSkipNode['id']] = llmSkipNode
@@ -450,8 +480,8 @@ export class Flowise {
       // push `runValidatorNode`
       this.nodes[runValidatorNode['id']] = runValidatorNode
 
-      // push `edge userFeedback_runValidator_edge`
-      this.edges.push(userFeedback_runValidator_edge)
+      // push `edge checkFlow_runValidator_edge`
+      this.edges.push(checkFlow_runValidator_edge)
     }
 
     // push `storeNode`
@@ -1016,6 +1046,8 @@ export class Flowise {
     };
     return node;
   }
+
+  // A COMMON FIELD STATE NODE with ALL TRANSITIONS
 
   /**
    * Connects two nodes using xMessage
