@@ -359,9 +359,6 @@ export class Flowise {
       this.nodes['fieldState']
     )
 
-    // Update xMessage of FIELD_STATE_NODE
-    this.xMessageConnect(clearStateNode.id, 'fieldState')
-
     // PUSHING BACK TRAVERSAL RELATED NODES and EDGES
 
     // push `fieldSetterNode`
@@ -384,6 +381,9 @@ export class Flowise {
 
     // push `clearState_fieldState_edge`
     this.edges.push(clearState_fieldState_edge)
+
+    // Update xMessage of FIELD_STATE_NODE
+    this.xMessageConnect(clearStateNode.id, 'fieldState')
 
 
     // // // DECLARING VARIABLES in COMMON SCOPES // // //
@@ -1125,7 +1125,7 @@ export class Flowise {
    */
   fieldStateNode({
     id,
-    xMessage,
+    xMessage = [],
     outputStates,
     target = "",
     x = 11040.765023120011,
