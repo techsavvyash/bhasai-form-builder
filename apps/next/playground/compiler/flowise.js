@@ -13,6 +13,7 @@ import {
   ValidationMsg,
   EndOfSurvey,
   isNormalCode,
+  checkNextCode,
 } from './logic/snippets'
 import { createAllQuestionsKeys } from './helper'
 
@@ -84,6 +85,8 @@ export class Flowise {
     // FIELD STATE with all connections
     // Get all the states
     const states = fields.map((field, index) => field['title'])
+    // Add 'end' as an output state.
+    states.push('end')
     const fieldStateNode = this.fieldStateNode({
       id: 'All_Fields',
       outputStates: states,
@@ -118,7 +121,7 @@ export class Flowise {
       this.edges.push(fieldState_edge);
     })
     // Add output edge from fieldState to END
-    const fieldState_end_edge = this.createEdge(this.nodes['fieldState'], this.nodes['end'])
+    const fieldState_end_edge = this.createFieldStateEdge('end', this.nodes['end'])
     this.edges.push(fieldState_end_edge)
 
     // Create The External Edges for each group
@@ -136,15 +139,15 @@ export class Flowise {
         // Update xMessage of curr-CODE_RUNNER_isVISIBLE_NODE
         this.xMessageConnect(this.nodes['allFields'].id, `CODE_RUNNER_isVISIBLE_${index}`)
       } else {
-        // Edge: prev-CODE_RUNNER_STORE_NODE -> curr-CODE_RUNNER_isVISIBLE_NODE
+        // Edge: prev-CODE_RUNNER_CHECK_NEXT_NODE -> curr-CODE_RUNNER_isVISIBLE_NODE
         const prev_isVisible_edge = this.createEdge(
-          this.nodes[`CODE_RUNNER_STORE_${index - 1}`],
+          this.nodes[`CODE_RUNNER_CHECK_NEXT_${index - 1}`],
           this.nodes[`CODE_RUNNER_isVISIBLE_${index}`]
         )
         this.edges.push(prev_isVisible_edge)
         // Update xMessage of curr-CODE_RUNNER_isVISIBLE_NODE
         this.xMessageConnect(
-          `CODE_RUNNER_STORE_${index - 1}`,
+          `CODE_RUNNER_CHECK_NEXT_${index - 1}`,
           `CODE_RUNNER_isVISIBLE_${index}`
         )
       }
@@ -177,15 +180,15 @@ export class Flowise {
     }
 
     // Connect the last group to the END node
-    // Edge: last-CODE_RUNNER_STORE_NODE -> END
-    const last_Store_end_edge = this.createEdge(
-      this.nodes[`CODE_RUNNER_STORE_${numberOfFields - 1}`],
+    // Edge: last-CODE_RUNNER_CHECK_NEXT_NODE -> END
+    const last_checkNext_end_edge = this.createEdge(
+      this.nodes[`CODE_RUNNER_CHECK_NEXT_${numberOfFields - 1}`],
       this.nodes['end']
     )
     // Update xMessage of END node
-    this.xMessageConnect(`CODE_RUNNER_STORE_${numberOfFields - 1}`, `end`)
-    // push last_Store_end_edge
-    this.edges.push(last_Store_end_edge)
+    this.xMessageConnect(`CODE_RUNNER_CHECK_NEXT_${numberOfFields - 1}`, `end`)
+    // push last_checkNext_end_edge
+    this.edges.push(last_checkNext_end_edge)
   }
 
   /**
@@ -197,11 +200,13 @@ export class Flowise {
     // create CODE_RUNNER_isVISIBLE_NODE
     const isVisibleNode_id = `isVISIBLE_${index}`
     const isVisibleNode_Code = isVisibleCode(field)
+    const isVisibleNode_xm = []
+    isVisibleNode_xm.push(`${this.nodes['allFields'].id}.data.instance`)
     this.x_cord = this.x_cord + this.width + 100
     const isVisibleNode = this.codeRunnerNode(
       isVisibleNode_id,
       isVisibleNode_Code,
-      [],
+      isVisibleNode_xm,
       this.x_cord
     )
     const validationTypes = field['validation'] // array of validation types
@@ -452,6 +457,25 @@ export class Flowise {
       `${validationNode['id']}.data.instance`
     )
 
+    // NEW: CODE RUNNER Check_Next
+    const checkNextNode_id = `CHECK_NEXT_${index}`
+    const checkNextNode_Code = checkNextCode();
+    const checkNextNode_xm = []
+    checkNextNode_xm.push(`${storeNode['id']}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
+    const checkNextNode = this.codeRunnerNode(
+      checkNextNode_id,
+      checkNextNode_Code,
+      checkNextNode_xm,
+      this.x_cord
+    )
+
+    // Edge between CODE_RUNNER_STORE_NODE -> CODE_RUNNER_CHECK_NEXT_NODE
+    const store_checkNext_edge = this.createEdge(storeNode, checkNextNode)
+
+    // Error Edge btw CODE_RUNNER_CHECK_NEXT_NODE -> FIELD_STATE_NODE
+    const checkNext_fieldState_error_edge = this.createEdge(checkNextNode, this.nodes['fieldState'], true)
+
     // Push all nodes and edges to this.nodes and this.edges sequentially
 
     // push `isVisibleNode`
@@ -533,6 +557,15 @@ export class Flowise {
 
     // push `edge validation_UserFeedback_edge`
     this.edges.push(validation_UserFeedback_edge)
+
+    // push `Check Next Node`
+    this.nodes[checkNextNode['id']] = checkNextNode;
+
+    // push `store_checkNext_edge`
+    this.edges.push(store_checkNext_edge);
+
+    // push `checkNext_fieldState_error_edge`
+    this.edges.push(checkNext_fieldState_error_edge);
   }
 
   /**

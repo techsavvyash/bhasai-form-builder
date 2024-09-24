@@ -86,6 +86,20 @@ export function isNormalCode(){
   return code;
 }
 
+// New: Check_Next CODE TEXT
+export function checkNextCode(){
+  let code = MSG_INIT;
+  code += `
+  if(msg.transformer.metaData.next != ''){
+    msg.payload.text = msg.transformer.metaData.next;
+    msg.transformer.metaData.next = '';
+    throw new Error('Back to Caller');
+  }
+  `
+  code += MSG_END;
+  return code;
+}
+
 // RUN VALIDATOR CODE TEXT
 export function runValidatorCode(fieldDetail) {
   const validationTypes = fieldDetail['validation'] // array of validation types
