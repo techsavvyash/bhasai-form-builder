@@ -81,6 +81,23 @@ export class Flowise {
     this.edges.push(allFields_start_edge);
 
     // // SINGLE NODES // EDGES and xMessages will be connected while creating the groups
+    // FIELD STATE with all connections
+    // Get all the states
+    const states = fields.map((field, index) => field['title'])
+    const fieldStateNode = this.fieldStateNode({
+      id: 'All_Fields',
+      outputStates: states,
+      x: ()=>{
+        this.x_cord = this.x_cord + this.width + 100;
+        return this.x_cord;
+      },
+      y: this.y_cord + 100
+    })
+    // ITS XMessage will be stored later.
+
+    // Push fieldStateNode to Nodes
+    this.nodes['fieldState'] = fieldStateNode
+    
     
     // Foreach field, create the group of nodes and edges
     fields.forEach((field, index) => {
@@ -94,6 +111,15 @@ export class Flowise {
     const endNode = this.codeRunnerNode(endId, endCode, [], this.x_cord)
     // push endNode
     this.nodes['end'] = endNode
+
+    // Add output edges from fieldState to all others.
+    fields.forEach((field, index) => {
+      const fieldState_edge = this.createFieldStateEdge(field.title, this.nodes[`CODE_RUNNER_isVISIBLE_${index}`])
+      this.edges.push(fieldState_edge);
+    })
+    // Add output edge from fieldState to END
+    const fieldState_end_edge = this.createEdge(this.nodes['fieldState'], this.nodes['end'])
+    this.edges.push(fieldState_end_edge)
 
     // Create The External Edges for each group
     // Connect each group to the next group
@@ -231,7 +257,7 @@ export class Flowise {
     // NEW: Check if to go with Normal Flow or Back Traversal
     // CODE RUNNER (checkFlow)
     this.x_cord = this.x_cord + this.width + 100
-    checkFlowXm = []
+    const checkFlowXm = []
     checkFlowXm.push(`${userFeedbackLoopNode['id']}.data.instance`)
     const checkFlowNode = this.codeRunnerNode(
       `checkFlow_${index}`,
@@ -247,7 +273,10 @@ export class Flowise {
       checkFlowNode
     )
 
-    
+    // NEW: Back Traversal Nodes and Edges
+    /**
+     * BACK TRAVERSAL FLOW
+     */
 
     // // // DECLARING VARIABLES in COMMON SCOPES // // //
     let llmCurrentInputStoreNode
@@ -1090,5 +1119,21 @@ export class Flowise {
       targetHandle: targetInId,
     }
     return edge
+  }
+
+  // CreateFieldStateEdges (outputState == field.title)
+  createFieldStateEdge(outputState, targetNode){
+    const targetId = targetNode.id
+    const targetInId = targetNode.data["inputAnchors"][0].id;
+    const edge = {
+      "source": "FIELD_STATE_All_Fields",
+      "sourceHandle": `switch-output-${outputState}-xMessage`,
+      "target": targetId,
+      "targetHandle": `${targetInId}`,
+      "type": "buttonedge",
+      "id": `FIELD_STATE_All_Fields-switch-output-${outputState}-${targetId}-${targetInId}`,
+      "data": { "label": "" }
+    }
+    return edge;
   }
 }

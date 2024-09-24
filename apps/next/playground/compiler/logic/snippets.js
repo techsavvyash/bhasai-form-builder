@@ -75,7 +75,7 @@ export function AskQuestion(fieldDetail) {
 export function isNormalCode(){
   let code = '';
   code += MSG_INIT;
-  code = `
+  code += `
     const input = msg.payload.text.trim();
     const copyInput = input.toLowerCase();
     if(copyInput.startsWith('/back')){
@@ -83,6 +83,7 @@ export function isNormalCode(){
     }
   `
   code += MSG_END;
+  return code;
 }
 
 // RUN VALIDATOR CODE TEXT
