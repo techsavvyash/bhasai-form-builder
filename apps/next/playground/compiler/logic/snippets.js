@@ -100,6 +100,35 @@ export function checkNextCode(){
   return code;
 }
 
+// New: clearState CODE TEXT
+export function clearStateCode(){
+  let code = MSG_INIT;
+  code += `
+  const state = msg.payload.text;
+  const statesArray = [];
+  statesArray.push(state);
+  if(msg.transformer.metaData.fields.\${state}){
+    statesArray.push(...msg.transformer.metaData.fields.\${state});
+  }
+  statesArray.forEach((state) => {
+    if(msg.transformer.metaData.currentInput[state]){
+      delete msg.transformer.metaData.currentInput[state];
+    }
+    if(msg.transformer.metaData.validationResult[state]){
+      delete msg.transformer.metaData.validationResult[state];
+    }
+    if(msg.transformer.metaData.required[state]){
+      delete msg.transformer.metaData.required[state];
+    }
+    if(msg.transformer.metaData.formInput[state]){
+      delete msg.transformer.metaData.formInput[state];
+    }
+  });
+  `
+  code += MSG_END;
+  return code;
+}
+
 // RUN VALIDATOR CODE TEXT
 export function runValidatorCode(fieldDetail) {
   const validationTypes = fieldDetail['validation'] // array of validation types

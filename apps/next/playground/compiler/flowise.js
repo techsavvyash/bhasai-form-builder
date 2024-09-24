@@ -14,6 +14,7 @@ import {
   EndOfSurvey,
   isNormalCode,
   checkNextCode,
+  clearStateCode,
 } from './logic/snippets'
 import { createAllQuestionsKeys } from './helper'
 
@@ -278,10 +279,112 @@ export class Flowise {
       checkFlowNode
     )
 
-    // NEW: Back Traversal Nodes and Edges
     /**
-     * BACK TRAVERSAL FLOW
+     * NEW: BACK TRAVERSAL FLOW
      */
+
+    // FIELD_SETTER_BACK_NODE
+    const fieldSetterNode_id = `BACK_${index}`
+    const fieldSetterXm = []
+    fieldSetterXm.push(`${checkFlowNode['id']}.data.instance`);
+    const backOptions = [];
+    for(let idx = 0; idx < index; idx++){
+      backOptions.push({
+        key: this.fields[idx].title,
+        text: this.fields[idx].description,
+        isEnabled: true,
+        showTextInput: true,
+      })
+    }
+    const fieldSetterJSON = {
+      "payload.buttonChoices": {
+        header: "Which response do you want to update?",
+        choices: backOptions,
+      },
+    }
+    this.x_cord = this.x_cord + this.width + 100
+
+    const fieldSetterNode = this.fieldSetterNode({
+      id: fieldSetterNode_id,
+      xMessage: fieldSetterXm,
+      settersJSON: fieldSetterJSON,
+      x: this.x_cord
+    })
+
+    // Edge between CODE_RUNNER_CHECKFLOW_NODE -> FIELD_SETTER_BACK_NODE
+    const checkFlow_fieldSetter_edge = this.createEdge(
+      checkFlowNode,
+      fieldSetterNode
+    )
+
+    // USER_FEEDBACK_LOOP_BACK_NODE
+    const userFeedbackLoopBackNode_xm = []
+    userFeedbackLoopBackNode_xm.push(`${fieldSetterNode['id']}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
+    const userFeedbackLoopBackNode = this.userFeedbackLoopNode(
+      'BACK_'+index,
+      userFeedbackLoopBackNode_xm,
+      this.x_cord
+    )
+
+    // Edge between FIELD_SETTER_BACK_NODE -> USER_FEEDBACK_LOOP_BACK_NODE
+    const fieldSetter_userFeedbackLoopBack_edge = this.createEdge(
+      fieldSetterNode,
+      userFeedbackLoopBackNode
+    )
+
+    // CODE RUNNER (Clear State)
+    const clearStateNode_id = `CLEAR_STATE_${index}`
+    const clearStateNode_Code = clearStateCode();
+    const clearStateNode_xm = []
+    // TODO: Implement '/back <field_name>' in clearStateCode LATER
+    clearStateNode_xm.push(`${userFeedbackLoopBackNode['id']}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
+    const clearStateNode = this.codeRunnerNode(
+      clearStateNode_id,
+      clearStateNode_Code,
+      clearStateNode_xm,
+      this.x_cord
+    )
+
+    // Edge between USER_FEEDBACK_LOOP_BACK_NODE -> CODE_RUNNER_CLEAR_STATE_NODE
+    const userFeedbackLoopBack_clearState_edge = this.createEdge(
+      userFeedbackLoopBackNode,
+      clearStateNode
+    )
+
+    // Edge between CODE_RUNNER_CLEAR_STATE_NODE -> FIELD_STATE_NODE
+    const clearState_fieldState_edge = this.createEdge(
+      clearStateNode,
+      this.nodes['fieldState']
+    )
+
+    // Update xMessage of FIELD_STATE_NODE
+    this.xMessageConnect(clearStateNode.id, 'fieldState')
+
+    // PUSHING BACK TRAVERSAL RELATED NODES and EDGES
+
+    // push `fieldSetterNode`
+    this.nodes[fieldSetterNode.id] = fieldSetterNode
+
+    // push `checkFlow_fieldSetter_edge`
+    this.edges.push(checkFlow_fieldSetter_edge)
+
+    // push `userFeedbackLoopBackNode`
+    this.nodes[userFeedbackLoopBackNode.id] = userFeedbackLoopBackNode
+
+    // push `fieldSetter_userFeedbackLoopBack_edge`
+    this.edges.push(fieldSetter_userFeedbackLoopBack_edge)
+
+    // push `clearStateNode`
+    this.nodes[clearStateNode.id] = clearStateNode
+
+    // push `userFeedbackLoopBack_clearState_edge`
+    this.edges.push(userFeedbackLoopBack_clearState_edge)
+
+    // push `clearState_fieldState_edge`
+    this.edges.push(clearState_fieldState_edge)
+
 
     // // // DECLARING VARIABLES in COMMON SCOPES // // //
     let llmCurrentInputStoreNode
