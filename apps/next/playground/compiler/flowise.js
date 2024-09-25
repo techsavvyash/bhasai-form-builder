@@ -205,6 +205,135 @@ export class Flowise {
     this.xMessageConnect(`CODE_RUNNER_CHECK_NEXT_${numberOfFields - 1}`, `end`)
     // push last_checkNext_end_edge
     this.edges.push(last_checkNext_end_edge)
+
+    // NEW: BACK TRAVERSAL FLOW
+    // ADD a User Feedback Loop Node to the END Node
+    const userFeedbackLoopEndNode_xm = []
+    userFeedbackLoopEndNode_xm.push(`${this.nodes['end'].id}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
+    const userFeedbackLoopEndNode = this.userFeedbackLoopNode(
+      'END',
+      userFeedbackLoopEndNode_xm,
+      this.x_cord
+    )
+
+    // Edge between END -> USER_FEEDBACK_LOOP_END_NODE
+    const end_UserFeedbackLoop_edge = this.createEdge(this.nodes['end'], userFeedbackLoopEndNode)
+
+    // Create a CODE_RUNNER_LAST (to check if '/back' is entered)
+    this.x_cord = this.x_cord + this.width + 100
+    const lastCheckFlowXm = []
+    lastCheckFlowXm.push(`${userFeedbackLoopEndNode['id']}.data.instance`)
+    const lastCheckFlowNode = this.codeRunnerNode(
+      `checkFlow_END`,
+      isNormalCode(),
+      lastCheckFlowXm,
+      this.x_cord,
+      this.y_cord
+    )
+
+    // Edge between USER_FEEDBACK_LOOP_END_NODE -> CODE_RUNNER_CHECKFLOW_NODE
+    const userFeedback_lastCheckFlow_edge = this.createEdge(userFeedbackLoopEndNode, lastCheckFlowNode)
+
+    // FIELD_SETTER_BACK_NODE
+    const fieldSetterNode_id = `BACK_END`
+    const fieldSetterXm = []
+    fieldSetterXm.push(`${lastCheckFlowNode['id']}.data.instance`);
+    const backOptions = [];
+    for(let idx = 0; idx < numberOfFields; idx++){
+      backOptions.push({
+        key: this.fields[idx].title,
+        text: this.fields[idx].description,
+        isEnabled: true,
+        showTextInput: true,
+      })
+    }
+    const fieldSetterJSON = {
+      "payload.buttonChoices": {
+        header: "Which response do you want to update?",
+        choices: backOptions,
+      },
+    }
+
+    this.x_cord = this.x_cord + this.width + 100
+    const fieldSetterNode = this.fieldSetterNode({
+      id: fieldSetterNode_id,
+      xMessage: fieldSetterXm,
+      settersJSON: fieldSetterJSON,
+      x: this.x_cord
+    })
+
+    // ERROR Edge between CODE_RUNNER_CHECKFLOW_NODE -> FIELD_SETTER_BACK_NODE
+    const checkFlow_fieldSetter_error_edge = this.createEdge(lastCheckFlowNode, fieldSetterNode, true)
+
+    // USER_FEEDBACK_LOOP_BACK_NODE
+    const userFeedbackLoopBackNode_xm = []
+    userFeedbackLoopBackNode_xm.push(`${fieldSetterNode['id']}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
+    const userFeedbackLoopBackNode = this.userFeedbackLoopNode(
+      'BACK_END',
+      userFeedbackLoopBackNode_xm,
+      this.x_cord
+    )
+
+    // Edge between FIELD_SETTER_BACK_NODE -> USER_FEEDBACK_LOOP_BACK_NODE
+    const fieldSetter_userFeedbackLoopBack_edge = this.createEdge(fieldSetterNode, userFeedbackLoopBackNode)
+
+    // CODE RUNNER (Clear State)
+    const clearStateNode_id = `CLEAR_STATE_END`
+    const nextState = 'end'
+    const clearStateNode_Code = clearStateCode(nextState);
+    const clearStateNode_xm = []
+    clearStateNode_xm.push(`${userFeedbackLoopBackNode['id']}.data.instance`)
+    this.x_cord = this.x_cord + this.width + 100
+    const clearStateNode = this.codeRunnerNode(
+      clearStateNode_id,
+      clearStateNode_Code,
+      clearStateNode_xm,
+      this.x_cord
+    )
+
+    // Edge between USER_FEEDBACK_LOOP_BACK_NODE -> CODE_RUNNER_CLEAR_STATE_NODE
+    const userFeedbackLoopBack_clearState_edge = this.createEdge(userFeedbackLoopBackNode, clearStateNode)
+
+    // Edge between CODE_RUNNER_CLEAR_STATE_NODE -> FIELD_STATE_NODE
+    const clearState_fieldState_edge = this.createEdge(clearStateNode, this.nodes['fieldState'])
+
+
+    // PUSHING BACK TRAVERSAL RELATED NODES and EDGES
+
+    // push `userFeedbackLoopEndNode`
+    this.nodes[userFeedbackLoopEndNode.id] = userFeedbackLoopEndNode
+
+    // push `end_UserFeedbackLoop_edge`
+    this.edges.push(end_UserFeedbackLoop_edge)
+
+    // push `lastCheckFlowNode`
+    this.nodes[lastCheckFlowNode.id] = lastCheckFlowNode
+
+    // push `userFeedback_lastCheckFlow_edge`
+    this.edges.push(userFeedback_lastCheckFlow_edge)
+
+    // push `fieldSetterNode`
+    this.nodes[fieldSetterNode.id] = fieldSetterNode
+
+    // push `checkFlow_fieldSetter_error_edge`
+    this.edges.push(checkFlow_fieldSetter_error_edge)
+
+    // push `userFeedbackLoopBackNode`
+    this.nodes[userFeedbackLoopBackNode.id] = userFeedbackLoopBackNode
+
+    // push `fieldSetter_userFeedbackLoopBack_edge`
+    this.edges.push(fieldSetter_userFeedbackLoopBack_edge)
+
+    // push `clearStateNode`
+    this.nodes[clearStateNode.id] = clearStateNode
+
+    // push `userFeedbackLoopBack_clearState_edge`
+    this.edges.push(userFeedbackLoopBack_clearState_edge)
+
+    // push `clearState_fieldState_edge`
+    this.edges.push(clearState_fieldState_edge)
   }
 
   /**

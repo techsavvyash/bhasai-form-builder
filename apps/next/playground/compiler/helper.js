@@ -6,7 +6,7 @@ export const createAllQuestionsKeys = (fields) => {
         allQuestions[field.title] = [];
         const reactions = getDependentQuestions(field.reactions);
         reactions.forEach((reaction) => {
-            allQuestions[field.title].push(reaction);
+            allQuestions[reaction].push(field.title);
         });
     });
     

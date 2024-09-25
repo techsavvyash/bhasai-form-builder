@@ -117,23 +117,26 @@ export function clearStateCode(nextState){
   const state = msg.payload.text;
   const statesArray = [];
   statesArray.push(state);
-  if(msg.transformer.metaData.fields[state]){
-    statesArray.push(...msg.transformer.metaData.fields[state]);
-  }
-  statesArray.forEach((state) => {
-    if(msg.transformer.metaData.currentInput[state]){
-      delete msg.transformer.metaData.currentInput[state];
+  try{
+    if(msg.transformer.metaData.fields[state]){
+      statesArray.push(...msg.transformer.metaData.fields[state]);
     }
-    if(msg.transformer.metaData.validationResult[state]){
-      delete msg.transformer.metaData.validationResult[state];
-    }
-    if(msg.transformer.metaData.required[state]){
-      delete msg.transformer.metaData.required[state];
-    }
-    if(msg.transformer.metaData.formInput[state]){
-      delete msg.transformer.metaData.formInput[state];
-    }
-  });
+    msg.transformer.metaData.states = statesArray;
+    statesArray.forEach((state) => {
+      if(msg.transformer.metaData.currentInput[state]){
+        delete msg.transformer.metaData.currentInput[state];
+      }
+      if(msg.transformer.metaData.validationResult[state]){
+        delete msg.transformer.metaData.validationResult[state];
+      }
+      if(msg.transformer.metaData.required[state]){
+        delete msg.transformer.metaData.required[state];
+      }
+      if(msg.transformer.metaData.formInput[state]){
+        delete msg.transformer.metaData.formInput[state];
+      }
+    });
+  }catch{}
   `
   // Setting the next state
   code += `
@@ -455,6 +458,11 @@ export function EndOfSurvey() {
         msg.payload.text += key + ": " + formInput[key] + "\\n";
       });
     }
+  `
+
+  // Asking if user wants to update any field then enter '/back'
+  code += `
+    msg.payload.text += "If you want to update any field, please type '/back'";
   `
 
   code += MSG_END
