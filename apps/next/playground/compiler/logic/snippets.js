@@ -90,9 +90,7 @@ export function isNormalCode(){
 export function checkNextCode(){
   let code = MSG_INIT;
   code += `
-  if(msg.transformer.metaData.next != ''){
-    msg.payload.text = msg.transformer.metaData.next;
-    msg.transformer.metaData.next = '';
+  if(msg.transformer.metaData.next && msg.transformer.metaData.next.length > 0) {
     throw new Error('Back to Caller');
   }
   `
@@ -100,15 +98,27 @@ export function checkNextCode(){
   return code;
 }
 
-// New: clearState CODE TEXT
-export function clearStateCode(){
+// New: Set next field
+export function nextFieldSetterCode(){
   let code = MSG_INIT;
+  code += `
+  msg.payload.text = msg.transformer.metaData.next;
+  delete msg.transformer.metaData.next
+  `
+  code += MSG_END;
+  return code;
+}
+
+// New: clearState CODE TEXT
+export function clearStateCode(nextState){
+  let code = MSG_INIT;
+  // Clearing the inputs for the field we want to update
   code += `
   const state = msg.payload.text;
   const statesArray = [];
   statesArray.push(state);
-  if(msg.transformer.metaData.fields.\${state}){
-    statesArray.push(...msg.transformer.metaData.fields.\${state});
+  if(msg.transformer.metaData.fields[state]){
+    statesArray.push(...msg.transformer.metaData.fields[state]);
   }
   statesArray.forEach((state) => {
     if(msg.transformer.metaData.currentInput[state]){
@@ -124,6 +134,10 @@ export function clearStateCode(){
       delete msg.transformer.metaData.formInput[state];
     }
   });
+  `
+  // Setting the next state
+  code += `
+  msg.transformer.metaData.next = '${nextState}';
   `
   code += MSG_END;
   return code;

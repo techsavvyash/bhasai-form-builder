@@ -15,6 +15,7 @@ import {
   isNormalCode,
   checkNextCode,
   clearStateCode,
+  nextFieldSetterCode,
 } from './logic/snippets'
 import { createAllQuestionsKeys } from './helper'
 
@@ -83,6 +84,16 @@ export class Flowise {
     this.edges.push(allFields_start_edge);
 
     // // SINGLE NODES // EDGES and xMessages will be connected while creating the groups
+    // CODERUNNER_SET_NEXT
+    this.x_cord = this.x_cord + this.width + 100;
+    const setNextNode = this.codeRunnerNode(
+      'SET_NEXT',
+      nextFieldSetterCode(),
+      [],
+      this.x_cord
+    )
+    this.nodes['setNext'] = setNextNode;
+
     // FIELD STATE with all connections
     // Get all the states
     const states = fields.map((field, index) => field['title'])
@@ -90,6 +101,7 @@ export class Flowise {
     states.push('end')
     const fieldStateNode = this.fieldStateNode({
       id: 'All_Fields',
+      xMessage: [`${setNextNode['id']}.data.instance`],
       outputStates: states,
       x: ()=>{
         this.x_cord = this.x_cord + this.width + 100;
@@ -97,10 +109,13 @@ export class Flowise {
       },
       y: this.y_cord + 100
     })
-    // ITS XMessage will be stored later.
 
     // Push fieldStateNode to Nodes
     this.nodes['fieldState'] = fieldStateNode
+
+    // Create Edge between SET_NEXT and FIELD_STATE
+    const setNext_fieldState_edge = this.createEdge(setNextNode, fieldStateNode)
+    this.edges.push(setNext_fieldState_edge)
     
     
     // Foreach field, create the group of nodes and edges
@@ -288,7 +303,7 @@ export class Flowise {
     const fieldSetterXm = []
     fieldSetterXm.push(`${checkFlowNode['id']}.data.instance`);
     const backOptions = [];
-    for(let idx = 0; idx < index; idx++){
+    for(let idx = 0; idx <= index; idx++){
       backOptions.push({
         key: this.fields[idx].title,
         text: this.fields[idx].description,
@@ -311,10 +326,11 @@ export class Flowise {
       x: this.x_cord
     })
 
-    // Edge between CODE_RUNNER_CHECKFLOW_NODE -> FIELD_SETTER_BACK_NODE
-    const checkFlow_fieldSetter_edge = this.createEdge(
+    // ERROR Edge between CODE_RUNNER_CHECKFLOW_NODE -> FIELD_SETTER_BACK_NODE
+    const checkFlow_fieldSetter_error_edge = this.createEdge(
       checkFlowNode,
-      fieldSetterNode
+      fieldSetterNode,
+      true
     )
 
     // USER_FEEDBACK_LOOP_BACK_NODE
@@ -335,7 +351,8 @@ export class Flowise {
 
     // CODE RUNNER (Clear State)
     const clearStateNode_id = `CLEAR_STATE_${index}`
-    const clearStateNode_Code = clearStateCode();
+    const nextState = this.fields[index].title
+    const clearStateNode_Code = clearStateCode(nextState);
     const clearStateNode_xm = []
     // TODO: Implement '/back <field_name>' in clearStateCode LATER
     clearStateNode_xm.push(`${userFeedbackLoopBackNode['id']}.data.instance`)
@@ -364,8 +381,8 @@ export class Flowise {
     // push `fieldSetterNode`
     this.nodes[fieldSetterNode.id] = fieldSetterNode
 
-    // push `checkFlow_fieldSetter_edge`
-    this.edges.push(checkFlow_fieldSetter_edge)
+    // push `checkFlow_fieldSetter_error_edge`
+    this.edges.push(checkFlow_fieldSetter_error_edge)
 
     // push `userFeedbackLoopBackNode`
     this.nodes[userFeedbackLoopBackNode.id] = userFeedbackLoopBackNode
@@ -382,8 +399,8 @@ export class Flowise {
     // push `clearState_fieldState_edge`
     this.edges.push(clearState_fieldState_edge)
 
-    // Update xMessage of FIELD_STATE_NODE
-    this.xMessageConnect(clearStateNode.id, 'fieldState')
+    // Update xMessage of SET_NEXT_NODE
+    this.xMessageConnect(clearStateNode.id, 'setNext')
 
 
     // // // DECLARING VARIABLES in COMMON SCOPES // // //
@@ -576,8 +593,8 @@ export class Flowise {
     // Edge between CODE_RUNNER_STORE_NODE -> CODE_RUNNER_CHECK_NEXT_NODE
     const store_checkNext_edge = this.createEdge(storeNode, checkNextNode)
 
-    // Error Edge btw CODE_RUNNER_CHECK_NEXT_NODE -> FIELD_STATE_NODE
-    const checkNext_fieldState_error_edge = this.createEdge(checkNextNode, this.nodes['fieldState'], true)
+    // Error Edge btw CODE_RUNNER_CHECK_NEXT_NODE -> SET_NEXT
+    const checkNext_setNext_error_edge = this.createEdge(checkNextNode, this.nodes['setNext'], true)
 
     // Push all nodes and edges to this.nodes and this.edges sequentially
 
@@ -667,8 +684,8 @@ export class Flowise {
     // push `store_checkNext_edge`
     this.edges.push(store_checkNext_edge);
 
-    // push `checkNext_fieldState_error_edge`
-    this.edges.push(checkNext_fieldState_error_edge);
+    // push `checkNext_setNext_error_edge`
+    this.edges.push(checkNext_setNext_error_edge);
   }
 
   /**
