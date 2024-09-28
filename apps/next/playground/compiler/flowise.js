@@ -25,6 +25,7 @@ import { createAllQuestionsKeys } from './helper'
 export class Flowise {
   constructor(parsedformilyFields) {
     this.fields = parsedformilyFields    
+    this.start = parsedformilyFields[0]?.title
     this.edges = []
     this.nodes = {
       start: startNode,
@@ -121,7 +122,7 @@ export class Flowise {
     // Foreach field, create the group of nodes and edges
     fields.forEach((field, index) => {
       // create Field Group
-      this.createFieldGroup(field, index)
+      this.createFieldGroup(field, index, questionKeys)
     })
     // END Node
     const endId = 'END'
@@ -282,7 +283,7 @@ export class Flowise {
     // CODE RUNNER (Clear State)
     const clearStateNode_id = `CLEAR_STATE_END`
     const nextState = 'end'
-    const clearStateNode_Code = clearStateCode(nextState);
+    const clearStateNode_Code = clearStateCode(nextState, this.start);
     const clearStateNode_xm = []
     clearStateNode_xm.push(`${userFeedbackLoopBackNode['id']}.data.instance`)
     this.x_cord = this.x_cord + this.width + 100
@@ -341,10 +342,13 @@ export class Flowise {
    * @param {*} field: field object
    * @param {*} index: index of the field
    */
-  createFieldGroup(field, index) {
+  createFieldGroup(field, index, questionKeys) {
     // create CODE_RUNNER_isVISIBLE_NODE
     const isVisibleNode_id = `isVISIBLE_${index}`
-    const isVisibleNode_Code = isVisibleCode(field)
+    let allowNext = true;
+    if(questionKeys[field.title].length > 0) allowNext = false
+    
+    const isVisibleNode_Code = isVisibleCode(field, allowNext)
     const isVisibleNode_xm = []
     isVisibleNode_xm.push(`${this.nodes['allFields'].id}.data.instance`)
     this.x_cord = this.x_cord + this.width + 100
@@ -481,7 +485,7 @@ export class Flowise {
     // CODE RUNNER (Clear State)
     const clearStateNode_id = `CLEAR_STATE_${index}`
     const nextState = this.fields[index].title
-    const clearStateNode_Code = clearStateCode(nextState);
+    const clearStateNode_Code = clearStateCode(nextState, this.start);
     const clearStateNode_xm = []
     // TODO: Implement '/back <field_name>' in clearStateCode LATER
     clearStateNode_xm.push(`${userFeedbackLoopBackNode['id']}.data.instance`)

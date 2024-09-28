@@ -6,7 +6,7 @@ const MSG_INIT = 'const msg = JSON.parse($0);\n'
 const MSG_END = 'return JSON.stringify(msg);'
 
 // IS VISIBLE CODE TEXT
-export function isVisibleCode(fieldDetail) {
+export function isVisibleCode(fieldDetail, allowNext) {
   const title = fieldDetail['title']
   let code = MSG_INIT
   // If field is not visible, throw an error to go to next group
@@ -20,6 +20,14 @@ export function isVisibleCode(fieldDetail) {
     code += `if(!(${fieldDetail['reactions']})) throw new Error('Not Visible');\n`
   }
   code += `msg.transformer.metaData.required = {"${title}" : ${fieldDetail['required']}};\n`
+  // SET allowNext
+  code += `
+    msg.transformer.metaData.allowNext = ${allowNext}
+  `
+  // SET curr
+  code += `
+    msg.transformer.metaData.curr = '${title}'
+  `
   code += MSG_END
   return code
 }
@@ -89,8 +97,10 @@ export function isNormalCode(){
 // New: Check_Next CODE TEXT
 export function checkNextCode(){
   let code = MSG_INIT;
+  // 1. Skip error if next is the first node
+  // 2. Skip error if curr has dependant nodes
   code += `
-  if(msg.transformer.metaData.next && msg.transformer.metaData.next.length > 0) {
+  if(msg.transformer.metaData.allowNext && msg.transformer.metaData.next && msg.transformer.metaData.next.length > 0) {
     throw new Error('Back to Caller');
   }
   `
@@ -110,7 +120,8 @@ export function nextFieldSetterCode(){
 }
 
 // New: clearState CODE TEXT
-export function clearStateCode(nextState){
+export function clearStateCode(nextState, start){
+  
   let code = MSG_INIT;
   // Clearing the inputs for the field we want to update
   code += `
@@ -140,7 +151,10 @@ export function clearStateCode(nextState){
   `
   // Setting the next state
   code += `
-  msg.transformer.metaData.next = '${nextState}';
+  if(msg.transformer.metaData.curr == '${start}')
+    msg.transformer.metaData.next = '';
+  else
+    msg.transformer.metaData.next = '${nextState}'
   `
   code += MSG_END;
   return code;
