@@ -476,7 +476,24 @@ export function EndOfSurvey() {
 
   // Asking if user wants to update any field then enter '/back'
   code += `
-    msg.payload.text += "If you want to update any field, please type '/back'";
+    msg.payload.text += "Please select 'back' to update any field. or select 'submit' to submit the form.";
+    msg.payload.buttonChoices = {
+      header: "Please select 'back' to update any field. or select 'submit' to submit the form.",
+      choices: [
+        {
+          text: "Back",
+          key: "/back",
+          isEnabled: true,
+          showTextInput: true
+        },
+        {
+          text: "Submit",
+          key: "Your form has been submitted successfully",
+          isEnabled: true,
+          showTextInput: true
+        }
+      ]
+    }
   `
 
   code += MSG_END
