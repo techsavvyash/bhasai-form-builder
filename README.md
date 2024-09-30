@@ -2,9 +2,28 @@
 
 <img width="600" src="https://img.alicdn.com/imgextra/i1/O1CN01bg1tTN1p5ZOPmhKV0_!!6000000005309-55-tps-2200-981.svg">
 
-</p>
+<!-- LOCAL REPO SETUP -->
 
-  
+---
+## Local Repo Setup
+1. Clone the repo
+    ```bash
+    git clone https://github.com/techsavvyash/bhasai-form-builder.git
+    ```
+    _(Optional)_
+    ```bash
+    git checkout <branch_name>
+    ```
+2. Install Dependencies
+    ```bash
+    yarn install
+    ```
+3. Run the development server
+    ```bash
+    yarn dev
+    ```
+
+</p>
 
 ---
 
