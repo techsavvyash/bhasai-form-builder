@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { usePrefix, IconWidget } from '@designable/react'
+import { usePrefix, IconWidget } from '@samagrax/react'
 import cls from 'classnames'
 import './styles.less'
 
@@ -13,6 +13,7 @@ export interface IInputItemsProps {
   style?: React.CSSProperties
   width?: string | number
   vertical?: boolean
+  children?: any
 }
 
 export interface IInputItemProps {
@@ -22,6 +23,7 @@ export interface IInputItemProps {
   width?: string | number
   vertical?: boolean
   title?: React.ReactNode
+  children?: any
 }
 
 const InputItemsContext = React.createContext<IInputItemsContext>(null)

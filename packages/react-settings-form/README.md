@@ -1,1 +1,1 @@
-# @designable/react-settings-form
+# @samagrax/react-settings-form

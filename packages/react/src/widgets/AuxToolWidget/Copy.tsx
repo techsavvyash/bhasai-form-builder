@@ -1,5 +1,5 @@
 import React from 'react'
-import { TreeNode } from '@designable/core'
+import { TreeNode } from '@samagrax/core'
 import { usePrefix } from '../../hooks'
 import { IconWidget } from '../IconWidget'
 import { Button } from 'antd'

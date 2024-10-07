@@ -1,5 +1,5 @@
 import { action, define, observable, toJS } from '@formily/reactive'
-import { uid, isFn, each } from '@designable/shared'
+import { uid, isFn, each } from '@samagrax/shared'
 import { Operation } from './Operation'
 import {
   InsertBeforeEvent,
@@ -298,7 +298,7 @@ export class TreeNode {
   }
 
   getParentByDepth(depth = 0) {
-    let parent = this.parent
+    const parent = this.parent
     if (parent?.depth === depth) {
       return parent
     } else {
@@ -338,9 +338,9 @@ export class TreeNode {
 
   triggerMutation<T>(event: any, callback?: () => T, defaults?: T): T {
     if (this.operation) {
-      const result = this.operation.dispatch(event, callback) || defaults
+      this.operation.dispatch(event, callback)
       this.takeSnapshot(event?.type)
-      return result
+      return defaults
     } else if (isFn(callback)) {
       return callback()
     }

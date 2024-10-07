@@ -1,9 +1,10 @@
 {
-  "name": "@designable/react-sandbox",
-  "version": "1.0.0-beta.45",
+  "name": "@samagrax/react-sandbox",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "lib",
   "types": "lib/index.d.ts",
+  "type": "module",
   "engines": {
     "npm": ">=3.0.0"
   },
@@ -26,8 +27,8 @@
     "react": "16.x || 17.x"
   },
   "dependencies": {
-    "@designable/react": "1.0.0-beta.45",
-    "@designable/shared": "1.0.0-beta.45"
+    "@samagrax/react": "*",
+    "@samagrax/shared": "*"
   },
   "publishConfig": {
     "access": "public"

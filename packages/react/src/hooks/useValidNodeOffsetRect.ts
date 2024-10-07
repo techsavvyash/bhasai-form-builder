@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { TreeNode, CursorStatus, CursorDragType } from '@designable/core'
-import { LayoutObserver } from '@designable/shared'
+import { TreeNode, CursorStatus, CursorDragType } from '@samagrax/core'
+import { LayoutObserver } from '@samagrax/shared'
 import { useViewport } from './useViewport'
 import { useDesigner } from './useDesigner'
 

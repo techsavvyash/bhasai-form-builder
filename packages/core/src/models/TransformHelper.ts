@@ -14,7 +14,7 @@ import {
   ILineSegment,
   calcClosestEdges,
   calcCombineSnapLineSegment,
-} from '@designable/shared'
+} from '@samagrax/shared'
 import { observable, define, action } from '@formily/reactive'
 import { SpaceBlock, AroundSpaceBlock } from './SpaceBlock'
 import { Operation } from './Operation'
@@ -273,7 +273,7 @@ export class TransformHelper {
         lines.push(line)
       }
     })
-    for (let type in this.aroundSpaceBlocks) {
+    for (const type in this.aroundSpaceBlocks) {
       const block = this.aroundSpaceBlocks[type]
       const line = block.snapLine
       if (line) {
@@ -286,7 +286,7 @@ export class TransformHelper {
   get thresholdSpaceBlocks(): SpaceBlock[] {
     const results = []
     if (!this.dragging) return []
-    for (let type in this.aroundSpaceBlocks) {
+    for (const type in this.aroundSpaceBlocks) {
       const block = this.aroundSpaceBlocks[type]
       if (!block.snapLine) return []
       if (block.snapLine.distance !== 0) return []
@@ -301,7 +301,7 @@ export class TransformHelper {
   get measurerSpaceBlocks(): SpaceBlock[] {
     const results: SpaceBlock[] = []
     if (!this.dragging || !this.snapped) return []
-    for (let type in this.aroundSpaceBlocks) {
+    for (const type in this.aroundSpaceBlocks) {
       if (this.aroundSpaceBlocks[type])
         results.push(this.aroundSpaceBlocks[type])
     }
@@ -477,7 +477,7 @@ export class TransformHelper {
   }
 
   eachViewportNodes(visitor: (node: TreeNode, rect: Rect) => void) {
-    for (let id in this.viewportRectsStore) {
+    for (const id in this.viewportRectsStore) {
       visitor(this.tree.findById(id), this.viewportRectsStore[id])
     }
   }
@@ -487,7 +487,7 @@ export class TransformHelper {
     const translate = this.calcBaseTranslate(node)
     this.snapped = false
     this.snapping = false
-    for (let line of this.closestSnapLines) {
+    for (const line of this.closestSnapLines) {
       line.translate(node, translate)
       this.snapping = true
       this.snapped = true
@@ -504,7 +504,7 @@ export class TransformHelper {
     const rect = this.calcBaseResize(node)
     this.snapping = false
     this.snapping = false
-    for (let line of this.closestSnapLines) {
+    for (const line of this.closestSnapLines) {
       line.resize(node, rect)
       this.snapping = true
       this.snapped = true

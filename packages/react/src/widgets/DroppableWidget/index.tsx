@@ -1,5 +1,5 @@
 import React from 'react'
-import { TreeNode } from '@designable/core'
+import { TreeNode } from '@samagrax/core'
 import { observer } from '@formily/reactive-react'
 import { useTreeNode, useNodeIdProps } from '../../hooks'
 import { NodeTitleWidget } from '../NodeTitleWidget'
@@ -17,6 +17,7 @@ export interface IDroppableWidgetProps {
   style?: React.CSSProperties
   className?: string
   hasChildren?: boolean
+  children?: React.ReactNode
 }
 
 export const DroppableWidget: React.FC<IDroppableWidgetProps> = observer(

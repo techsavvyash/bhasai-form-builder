@@ -1,6 +1,6 @@
 import * as Core from './exports'
 export * from './exports'
-import { globalThisPolyfill } from '@designable/shared'
+import { globalThisPolyfill } from '@samagrax/shared'
 
 if (globalThisPolyfill?.['Designable']?.['Core']) {
   if (module.exports) {
@@ -13,3 +13,5 @@ if (globalThisPolyfill?.['Designable']?.['Core']) {
   globalThisPolyfill['Designable'] = globalThisPolyfill['Designable'] || {}
   globalThisPolyfill['Designable'].Core = Core
 }
+
+// New Version: Check

@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react'
-import { usePrefix } from '@designable/react'
+import { usePrefix } from '@samagrax/react'
 import { camelCase } from '@formily/shared'
 import { Select } from '@formily/antd'
 import { observable } from '@formily/reactive'
@@ -84,7 +84,9 @@ export const BorderStyleSetter: React.FC<IBorderStyleSetterProps> = observer(
     }
 
     return (
+      // @ts-ignore
       <FoldItem label={field.title}>
+        {/* @ts-ignore */}
         <FoldItem.Extra>
           <div className={cls(prefix, className)} style={style}>
             <div className={prefix + '-position'}>

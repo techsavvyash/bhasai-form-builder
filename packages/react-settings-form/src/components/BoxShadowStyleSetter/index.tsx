@@ -1,5 +1,5 @@
 import React from 'react'
-import { usePrefix } from '@designable/react'
+import { usePrefix } from '@samagrax/react'
 import { useField, observer } from '@formily/react'
 import { FoldItem } from '../FoldItem'
 import { ColorInput } from '../ColorInput'
@@ -35,14 +35,17 @@ export const BoxShadowStyleSetter: React.FC<IBoxShadowStyleSetterProps> =
       }
     }
     return (
+      // @ts-ignore
       <FoldItem
         className={cls(prefix, props.className)}
         style={props.style}
         label={field.title}
       >
+        {/* @ts-ignore */}
         <FoldItem.Base>
           <ColorInput {...createBoxShadowConnector(4)} />
         </FoldItem.Base>
+        {/* @ts-ignore */}
         <FoldItem.Extra>
           <InputItems width="50%">
             <InputItems.Item icon="AxisX">

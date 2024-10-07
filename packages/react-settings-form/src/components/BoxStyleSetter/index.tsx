@@ -1,6 +1,6 @@
 import React from 'react'
 import { useField, observer } from '@formily/react'
-import { usePrefix, IconWidget } from '@designable/react'
+import { usePrefix, IconWidget } from '@samagrax/react'
 import { FoldItem } from '../FoldItem'
 import { SizeInput } from '../SizeInput'
 import { InputItems } from '../InputItems'
@@ -64,13 +64,16 @@ export const BoxStyleSetter: React.FC<IMarginStyleSetterProps> = observer(
     }
 
     return (
+      // @ts-ignore
       <FoldItem className={cls(prefix, props.className)} label={field.title}>
+        {/* @ts-ignore */}
         <FoldItem.Base>
           <SizeInput
             {...createPositionHandler('all', props)}
             exclude={['inherit', 'auto']}
           />
         </FoldItem.Base>
+        {/* @ts-ignore */}
         <FoldItem.Extra>
           <InputItems width="50%">
             <InputItems.Item icon={props.labels[0]}>

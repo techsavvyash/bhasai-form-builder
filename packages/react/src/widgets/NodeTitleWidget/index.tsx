@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react'
 import { observer } from '@formily/reactive-react'
-import { TreeNode } from '@designable/core'
+import { TreeNode } from '@samagrax/core'
 export interface INodeTitleWidgetProps {
   node: TreeNode
+  children?: any
 }
 
 export const NodeTitleWidget: React.FC<INodeTitleWidgetProps> = observer(

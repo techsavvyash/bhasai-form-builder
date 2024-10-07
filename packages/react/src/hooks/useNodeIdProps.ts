@@ -1,4 +1,4 @@
-import { TreeNode } from '@designable/core'
+import { TreeNode } from '@samagrax/core'
 import { useDesigner } from './useDesigner'
 import { useTreeNode } from './useTreeNode'
 

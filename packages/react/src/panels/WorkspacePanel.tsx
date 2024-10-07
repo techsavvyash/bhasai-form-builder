@@ -4,9 +4,10 @@ import { usePrefix } from '../hooks'
 export interface IWorkspaceItemProps {
   style?: React.CSSProperties
   flexable?: boolean
+  children?: any
 }
 
-export const WorkspacePanel: React.FC & {
+export const WorkspacePanel: React.FC<IWorkspaceItemProps> & {
   Item?: React.FC<IWorkspaceItemProps>
 } = (props) => {
   const prefix = usePrefix('workspace-panel')

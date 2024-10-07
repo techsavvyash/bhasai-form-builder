@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react'
-import { isStr, isFn, isObj, isPlainObj } from '@designable/shared'
+import { isStr, isFn, isObj, isPlainObj } from '@samagrax/shared'
 import { observer } from '@formily/reactive-react'
 import { Tooltip, TooltipProps } from 'antd'
 import { usePrefix, useRegistry, useTheme } from '../../hooks'
@@ -11,6 +11,7 @@ const IconContext = createContext<IconProviderProps>(null)
 const isNumSize = (val: any) => /^[\d.]+$/.test(val)
 export interface IconProviderProps {
   tooltip?: boolean
+  children?: any
 }
 
 export interface IShadowSVGProps {
@@ -51,6 +52,7 @@ export const IconWidget: React.FC<IIconWidgetProps> & {
     } else if (React.isValidElement(infer)) {
       if (infer.type === 'svg') {
         return React.cloneElement(infer, {
+          // @ts-ignore
           height,
           width,
           fill: 'currentColor',
@@ -121,6 +123,7 @@ export const IconWidget: React.FC<IIconWidgetProps> & {
         cursor: props.onClick ? 'pointer' : props.style?.cursor,
       }}
     >
+      {/* @ts-ignore */}
       {takeIcon(props.infer)}
     </span>
   )

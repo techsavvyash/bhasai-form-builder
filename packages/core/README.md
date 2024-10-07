@@ -1,1 +1,1 @@
-# @designable/core
+# @samagrax/core

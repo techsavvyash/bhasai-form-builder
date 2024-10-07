@@ -10,7 +10,7 @@ import {
   Rect,
   IRect,
   isRectInRect,
-} from '@designable/shared'
+} from '@samagrax/shared'
 import { action, define, observable } from '@formily/reactive'
 import { Workspace } from './Workspace'
 import { Engine } from './Engine'
@@ -337,7 +337,7 @@ export class Viewport {
   }
 
   containsElement(element: HTMLElement | Element | EventTarget) {
-    let root: Element | HTMLDocument = this.viewportElement
+    const root: Element | HTMLDocument = this.viewportElement
     if (root === element) return true
     return root?.contains(element as any)
   }

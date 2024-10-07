@@ -6,11 +6,8 @@ import {
   DragMoveEvent,
   DragStopEvent,
   CursorDragType,
-} from '@designable/core'
-import {
-  calcSpeedFactor,
-  createUniformSpeedAnimation,
-} from '@designable/shared'
+} from '@samagrax/core'
+import { calcSpeedFactor, createUniformSpeedAnimation } from '@samagrax/shared'
 import { useScreen, useDesigner, usePrefix } from '../../hooks'
 import { IconWidget } from '../../widgets'
 import { ResizeHandle, ResizeHandleType } from './handle'

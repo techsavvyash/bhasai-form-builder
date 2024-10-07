@@ -1,5 +1,5 @@
 import React from 'react'
-import { usePrefix, IconWidget } from '@designable/react'
+import { usePrefix, IconWidget } from '@samagrax/react'
 import { useField, Field, observer } from '@formily/react'
 import { Select, Radio, NumberPicker } from '@formily/antd'
 import { FoldItem } from '../FoldItem'
@@ -51,11 +51,13 @@ export const FontStyleSetter: React.FC<IFontStyleSetterProps> = observer(
     const field = useField()
     const prefix = usePrefix('font-style-setter')
     return (
+      // @ts-ignore
       <FoldItem
         label={field.title}
         className={cls(prefix, props.className)}
         style={props.style}
       >
+        {/* @ts-ignore */}
         <FoldItem.Base>
           <Field
             name="fontFamily"
@@ -67,6 +69,7 @@ export const FontStyleSetter: React.FC<IFontStyleSetterProps> = observer(
             dataSource={FontFamilyOptions}
           />
         </FoldItem.Base>
+        {/* @ts-ignore */}
         <FoldItem.Extra>
           <InputItems>
             <InputItems.Item icon="FontWeight" width="50%">

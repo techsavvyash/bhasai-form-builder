@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
-import { isStr, isPlainObj } from '@designable/shared'
-import { GlobalRegistry, IDesignerMiniLocales } from '@designable/core'
+import { isStr, isPlainObj } from '@samagrax/shared'
+import { GlobalRegistry, IDesignerMiniLocales } from '@samagrax/core'
 import { observer } from '@formily/reactive-react'
 
 export interface ITextWidgetProps {
@@ -8,6 +8,7 @@ export interface ITextWidgetProps {
   sourceName?: string
   token?: string | IDesignerMiniLocales
   defaultMessage?: string | IDesignerMiniLocales
+  children?: any
 }
 
 export const TextWidget: React.FC<ITextWidgetProps> = observer((props) => {
@@ -17,7 +18,7 @@ export const TextWidget: React.FC<ITextWidgetProps> = observer((props) => {
     if (isStr(message)) return message
     if (isPlainObj(message)) {
       const lang = GlobalRegistry.getDesignerLanguage()
-      for (let key in message) {
+      for (const key in message) {
         if (key.toLocaleLowerCase() === lang) return message[key]
       }
       return

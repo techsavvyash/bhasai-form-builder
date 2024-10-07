@@ -1,5 +1,5 @@
 import typescript from 'rollup-plugin-typescript2'
-import resolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import postcss from 'rollup-plugin-postcss'
 import commonjs from '@rollup/plugin-commonjs'
 import NpmImport from 'less-plugin-npm-import'
@@ -28,11 +28,11 @@ const presets = () => {
     '@formily/core': 'Formily.Core',
     '@formily/json-schema': 'Formily.JSONSchema',
     '@formily/react': 'Formily.React',
-    '@designable/shared': 'Designable.Shared',
-    '@designable/core': 'Designable.Core',
-    '@designable/react': 'Designable.React',
-    '@designable/react-sandbox': 'Designable.ReactSandbox',
-    '@designable/react-settings-form': 'Designable.ReactSettingsForm',
+    '@samagrax/shared': 'SamagraX.Shared',
+    '@samagrax/core': 'SamagraX.Core',
+    '@samagrax/react': 'SamagraX.React',
+    '@samagrax/react-sandbox': 'SamagraX.ReactSandbox',
+    '@samagrax/react-settings-form': 'SamagraX.ReactSettingsForm',
   }
   return [
     typescript({

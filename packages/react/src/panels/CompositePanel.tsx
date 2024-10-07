@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { isValid } from '@designable/shared'
+import { isValid } from '@samagrax/shared'
 import cls from 'classnames'
 import { IconWidget, TextWidget } from '../widgets'
 import { usePrefix } from '../hooks'
@@ -11,6 +11,7 @@ export interface ICompositePanelProps {
   defaultPinning?: boolean
   defaultActiveKey?: number
   activeKey?: number | string
+  children?: any
   onChange?: (activeKey: number | string) => void
 }
 export interface ICompositePanelItemProps {
@@ -21,6 +22,7 @@ export interface ICompositePanelItemProps {
   href?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
   extra?: React.ReactNode
+  children?: any
 }
 
 const parseItems = (

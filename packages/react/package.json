@@ -1,9 +1,10 @@
 {
-  "name": "@designable/react",
-  "version": "1.0.0-beta.45",
+  "name": "@samagrax/react",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "lib",
   "types": "lib/index.d.ts",
+  "type": "module",
   "engines": {
     "npm": ">=3.0.0"
   },
@@ -17,7 +18,7 @@
   },
   "homepage": "https://github.com/alibaba/designable#readme",
   "scripts": {
-    "build": "rimraf -rf lib esm dist && npm run build:cjs && npm run build:esm && npm run build:umd && ts-node copy",
+    "build": "rimraf -rf lib esm dist && npm run build:cjs && npm run build:esm && npm run build:umd && node --loader ts-node/esm copy.ts",
     "build:cjs": "tsc --project tsconfig.build.json",
     "build:esm": "tsc --project tsconfig.build.json --module es2015 --outDir esm",
     "build:umd": "rollup --config"
@@ -33,8 +34,8 @@
     "react": "16.x || 17.x"
   },
   "dependencies": {
-    "@designable/core": "1.0.0-beta.45",
-    "@designable/shared": "1.0.0-beta.45",
+    "@samagrax/core": "*",
+    "@samagrax/shared": "*",
     "dateformat": "^4.5.1"
   },
   "publishConfig": {

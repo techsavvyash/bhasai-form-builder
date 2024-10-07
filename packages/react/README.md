@@ -1,1 +1,1 @@
-# @designable/react
+# @samagrax/react

@@ -1,1 +1,1 @@
-# @designable/shared
+# @samagrax/shared

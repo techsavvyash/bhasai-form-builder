@@ -1,1 +1,1 @@
-# @designable/react-sandbox
+# @samagrax/react-sandbox

@@ -1,9 +1,10 @@
 {
-  "name": "@designable/core",
-  "version": "1.0.0-beta.45",
+  "name": "@samagrax/core",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "lib",
   "types": "lib/index.d.ts",
+  "type": "module",
   "engines": {
     "npm": ">=3.0.0"
   },
@@ -33,7 +34,7 @@
     "@formily/reactive": "^2.0.2"
   },
   "dependencies": {
-    "@designable/shared": "1.0.0-beta.45",
+    "@samagrax/shared": "*",
     "@juggle/resize-observer": "^3.3.1"
   },
   "publishConfig": {

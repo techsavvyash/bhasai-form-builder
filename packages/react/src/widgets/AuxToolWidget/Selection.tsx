@@ -11,7 +11,7 @@ import {
   useDesigner,
 } from '../../hooks'
 import { observer } from '@formily/reactive-react'
-import { TreeNode } from '@designable/core'
+import { TreeNode } from '@samagrax/core'
 import { TranslateHandler } from './TranslateHandler'
 export interface ISelectionBoxProps {
   node: TreeNode

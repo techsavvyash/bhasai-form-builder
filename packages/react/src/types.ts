@@ -1,11 +1,12 @@
 import React from 'react'
-import { Engine, IResource, IBehavior } from '@designable/core'
+import { Engine, IResource, IBehavior } from '@samagrax/core'
 
 export interface IDesignerLayoutProps {
   prefixCls?: string
   theme?: 'dark' | 'light' | (string & {})
   variables?: Record<string, string>
   position?: 'fixed' | 'absolute' | 'relative'
+  children?: any
 }
 export interface IDesignerProps extends IDesignerLayoutProps {
   engine: Engine
